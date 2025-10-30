@@ -467,6 +467,12 @@
             margin-right: 4px;
         }
 
+        .rating-value {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: 4px;
+        }
+
         .sold-count {
             margin-left: 8px;
         }
@@ -628,6 +634,19 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        .existing-product-rating {
+            font-size: 12px;
+            color: var(--warning);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .existing-product-rating .rating-value {
+            color: var(--text-secondary);
+            margin-left: 4px;
         }
 
         .existing-product-prices {
@@ -1036,6 +1055,11 @@
                     </div>
                     
                     <div class="form-group">
+                        <label class="form-label" for="product-rating">Rating Produk (1-5)</label>
+                        <input type="number" id="product-rating" class="form-input" placeholder="Masukkan rating 1-5" min="1" max="5" step="0.1" value="5" required>
+                    </div>
+                    
+                    <div class="form-group">
                         <label class="form-label" for="product-image">URL Gambar Produk</label>
                         <input type="url" id="product-image" class="form-input" placeholder="https://example.com/image.jpg">
                     </div>
@@ -1086,7 +1110,8 @@
                     <div class="product-info-preview">
                         <div class="product-name-preview" id="preview-name">Nama Produk</div>
                         <div class="product-rating-preview">
-                            <span class="rating-stars">★★★★★</span>
+                            <span class="rating-stars" id="preview-rating">★★★★★</span>
+                            <span class="rating-value" id="preview-rating-value">(5.0)</span>
                             <span class="sold-count" id="preview-sold">Terjual 0</span>
                         </div>
                         <div class="product-prices-preview">
@@ -1164,6 +1189,7 @@
         const productName = document.getElementById('product-name');
         const productStock = document.getElementById('product-stock');
         const productSold = document.getElementById('product-sold');
+        const productRating = document.getElementById('product-rating');
         const productImage = document.getElementById('product-image');
         const shortDescription = document.getElementById('short-description');
         const fullDescription = document.getElementById('full-description');
@@ -1184,6 +1210,8 @@
         const previewSold = document.getElementById('preview-sold');
         const previewVariants = document.getElementById('preview-variants');
         const previewStockBadge = document.getElementById('preview-stock-badge');
+        const previewRating = document.getElementById('preview-rating');
+        const previewRatingValue = document.getElementById('preview-rating-value');
         
         // Existing products elements
         const existingProductsList = document.getElementById('existing-products-list');
@@ -1194,6 +1222,29 @@
         // Global variables
         let currentEditId = null;
         let isLoading = false;
+        
+        // Fungsi untuk mengkonversi angka rating ke bintang
+        function getStarRating(rating) {
+            const numRating = parseFloat(rating) || 5;
+            const fullStars = Math.floor(numRating);
+            const hasHalfStar = numRating % 1 >= 0.5;
+            
+            let stars = '★'.repeat(fullStars);
+            if (hasHalfStar) {
+                stars += '½';
+            }
+            const emptyStars = 5 - Math.ceil(numRating);
+            stars += '☆'.repeat(emptyStars);
+            return stars;
+        }
+
+        // Fungsi untuk update rating preview
+        function updateRatingPreview() {
+            const ratingValue = productRating.value || '5';
+            const stars = getStarRating(ratingValue);
+            previewRating.textContent = stars;
+            previewRatingValue.textContent = `(${parseFloat(ratingValue).toFixed(1)})`;
+        }
         
         // Add variant functionality
         addVariantBtn.addEventListener('click', () => {
@@ -1286,6 +1337,10 @@
                         <div class="existing-product-details">
                             <div class="existing-product-name">${product.nama}</div>
                             <div class="existing-product-desc">${product.deskripsi_singkat}</div>
+                            <div class="existing-product-rating">
+                                <span class="rating-stars">${getStarRating(product.rating)}</span>
+                                <span class="rating-value">(${product.rating?.toFixed(1) || '5.0'})</span>
+                            </div>
                             <div class="existing-product-prices">
                                 ${hasDiscount ? `<span class="existing-old-price">Rp ${formatCurrency(lowestOriginalPrice)}</span>` : ''}
                                 <span class="existing-new-price">Rp ${formatCurrency(lowestDiscountedPrice)}</span>
@@ -1348,6 +1403,7 @@
                 productName.value = product.nama;
                 productStock.value = product.stok;
                 productSold.value = product.terjual;
+                productRating.value = product.rating || 5;
                 productImage.value = product.gambar;
                 shortDescription.value = product.deskripsi_singkat;
                 fullDescription.value = product.deskripsi_lengkap;
@@ -1432,6 +1488,7 @@
         fullDescription.addEventListener('input', updatePreview);
         productStock.addEventListener('change', updatePreview);
         productSold.addEventListener('input', updatePreview);
+        productRating.addEventListener('input', updatePreview);
         
         function updatePreview() {
             // Update product name
@@ -1462,6 +1519,9 @@
             
             // Update price preview
             updatePricePreview();
+            
+            // Update rating
+            updateRatingPreview();
         }
         
         function updateStockBadge() {
@@ -1570,6 +1630,7 @@
             productForm.reset();
             variantList.innerHTML = '';
             currentEditId = null;
+            productRating.value = 5; // Reset ke rating 5
             submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Produk';
             updatePreview();
         });
@@ -1585,8 +1646,15 @@
             if (isLoading) return;
             
             // Validate form
-            if (!productName.value || !productStock.value || !shortDescription.value || !fullDescription.value) {
+            if (!productName.value || !productStock.value || !productRating.value || !shortDescription.value || !fullDescription.value) {
                 alert('Harap lengkapi semua field yang wajib diisi!');
+                return;
+            }
+            
+            // Validate rating
+            const ratingValue = parseFloat(productRating.value);
+            if (isNaN(ratingValue) || ratingValue < 1 || ratingValue > 5) {
+                alert('Rating harus berupa angka antara 1-5!');
                 return;
             }
             
@@ -1621,11 +1689,11 @@
                 nama: productName.value,
                 stok: productStock.value,
                 terjual: parseInt(productSold.value) || 0,
+                rating: ratingValue,
                 gambar: productImage.value || '',
                 deskripsi_singkat: shortDescription.value,
                 deskripsi_lengkap: fullDescription.value,
-                varian: variants,
-                rating: 5
+                varian: variants
             };
             
             isLoading = true;
@@ -1678,6 +1746,7 @@
                 productForm.reset();
                 variantList.innerHTML = '';
                 currentEditId = null;
+                productRating.value = 5; // Reset ke rating 5
                 submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Produk';
                 updatePreview();
                 

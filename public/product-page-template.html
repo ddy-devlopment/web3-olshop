@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - ProductDash</title>
+    <title>Product Details - ProductDash</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -638,6 +638,46 @@
             font-size: 12px;
         }
 
+        /* Loading Styles */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(155, 92, 246, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            color: var(--danger);
+        }
+
         /* Responsive Styles */
         @media (max-width: 992px) {
             .checkout-container {
@@ -748,7 +788,7 @@
     </header>
 
     <!-- Main Content -->
-    <div class="checkout-container">
+    <div class="checkout-container" id="checkout-container" style="display: none;">
         <!-- Left Column: Product Summary, Shipping, Payment -->
         <div class="checkout-main">
             <!-- Product Summary -->
@@ -762,13 +802,14 @@
                     <!-- Header produk dengan gambar dan nama -->
                     <div class="product-header">
                         <div class="product-image">
-                            <i class="fas fa-headphones"></i>
+                            <img id="product-img" src="" alt="Product Image" style="display: none;">
+                            <i id="product-icon" class="fas fa-cube"></i>
                         </div>
                         <div>
-                            <div class="product-name">Wireless Headphones Premium Edition</div>
+                            <div class="product-name" id="product-name">Memuat produk...</div>
                             <!-- Deskripsi produk singkat -->
-                            <div class="product-desc">
-                                Headphone nirkabel dengan kualitas suara premium, baterai tahan lama, dan koneksi Bluetooth 5.0.
+                            <div class="product-desc" id="product-short-desc">
+                                Memuat deskripsi produk...
                             </div>
                         </div>
                     </div>
@@ -778,51 +819,22 @@
                         <!-- Deskripsi produk lengkap yang dapat digeser -->
                         <div class="product-full-desc">
                             <div class="desc-label">Deskripsi Lengkap:</div>
-                            <div class="desc-content">
-                                <p>Wireless Headphones Premium Edition hadir dengan teknologi audio mutakhir yang memberikan pengalaman mendengarkan yang luar biasa. Dibekali dengan driver berdaya tinggi 40mm, headphone ini menghasilkan suara yang jernih, bass yang dalam, dan detail yang tajam di seluruh rentang frekuensi.</p>
-                                
-                                <p><strong>Fitur Utama:</strong></p>
-                                <ul>
-                                    <li>Bluetooth 5.0 dengan jangkauan hingga 15 meter</li>
-                                    <li>Baterai tahan hingga 30 jam pemakaian</li>
-                                    <li>Fast charging - 15 menit untuk 5 jam pemakaian</li>
-                                    <li>Active Noise Cancellation (ANC) untuk pengalaman mendengarkan yang imersif</li>
-                                    <li>Koneksi kabel 3.5mm sebagai opsi cadangan</li>
-                                    <li>Desain ear cup yang nyaman untuk pemakaian lama</li>
-                                    <li>Kontrol sentuh untuk mengatur volume dan panggilan</li>
-                                    <li>Asisten suara terintegrasi (Google Assistant & Siri)</li>
-                                </ul>
-                                
-                                <p><strong>Spesifikasi Teknis:</strong></p>
-                                <ul>
-                                    <li>Impedansi: 32 ohm</li>
-                                    <li>Frekuensi respons: 20Hz - 20kHz</li>
-                                    <li>Sensitivitas: 100dB ± 3dB</li>
-                                    <li>Berat: 265g</li>
-                                    <li>Bahan: Plastik ABS dengan bantalan kulit sintetis</li>
-                                </ul>
-                                
-                                <p>Dilengkapi dengan case pelindung premium untuk penyimpanan dan perjalanan. Garansi resmi 2 tahun dengan dukungan pelanggan 24/7.</p>
+                            <div class="desc-content" id="product-full-desc">
+                                Memuat deskripsi lengkap produk...
                             </div>
                         </div>
                         
-                        <div class="product-package">
-                            <!-- MODIFIKASI: Mengubah label "Pilih Paket" menjadi "Pilih Varian" -->
-                            <div class="package-label">Pilih Varian:</div>
-                            <div class="package-options">
-                                <div class="package-option" data-package="basic" onclick="selectPackage('basic')">Basic</div>
-                                <div class="package-option selected" data-package="premium" onclick="selectPackage('premium')">Premium</div>
-                                <div class="package-option" data-package="pro" onclick="selectPackage('pro')">Pro</div>
-                            </div>
+                        <div class="product-package" id="product-variants-container">
+                            <!-- Varian akan diisi secara dinamis -->
                         </div>
                         
                         <div class="product-prices">
-                            <span class="old-price">Rp 1.499.000</span>
-                            <span class="new-price" id="product-price">Rp 1.299.000</span>
-                            <span class="discount-badge" id="product-discount">15%</span>
+                            <span class="old-price" id="product-original-price">Rp 0</span>
+                            <span class="new-price" id="product-price">Rp 0</span>
+                            <span class="discount-badge" id="product-discount" style="display: none;">0%</span>
                         </div>
                         
-                        <div class="stock-badge in-stock">In Stock ✅</div>
+                        <div class="stock-badge in-stock" id="product-stock">In Stock ✅</div>
                         
                         <div class="quantity-controls">
                             <button class="quantity-btn" onclick="updateQuantity(-1)">
@@ -834,7 +846,7 @@
                             </button>
                         </div>
                         
-                        <div class="product-total" id="product-total">Total: Rp 1.299.000</div>
+                        <div class="product-total" id="product-total">Total: Rp 0</div>
                     </div>
                 </div>
             </section>
@@ -911,19 +923,19 @@
                 
                 <div class="summary-row">
                     <span class="summary-label">Subtotal</span>
-                    <span class="summary-value" id="subtotal">Rp 1.299.000</span>
+                    <span class="summary-value" id="subtotal">Rp 0</span>
                 </div>
                 
                 <div class="summary-row">
                     <span class="summary-label">Diskon</span>
-                    <span class="summary-value" id="discount">-Rp 194.850</span>
+                    <span class="summary-value" id="discount">-Rp 0</span>
                 </div>
                 
                 <div class="summary-divider"></div>
                 
                 <div class="total-row">
                     <span class="total-label">Total Bayar</span>
-                    <span class="total-value" id="total">Rp 1.104.150</span>
+                    <span class="total-value" id="total">Rp 0</span>
                 </div>
                 
                 <!-- Container tombol baru -->
@@ -941,6 +953,25 @@
         </div>
     </div>
 
+    <!-- Loading State -->
+    <div class="loading-container" id="loading-container">
+        <div class="loading-spinner"></div>
+        <div>Memuat produk...</div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-container" id="error-container" style="display: none;">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h2>Produk Tidak Ditemukan</h2>
+        <p>Maaf, produk yang Anda cari tidak ditemukan atau mungkin telah dihapus.</p>
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i>
+            <span>Kembali ke Halaman Sebelumnya</span>
+        </button>
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification">
         <div class="notification-icon">
@@ -950,40 +981,140 @@
     </div>
 
     <script>
-        // Data produk
-        const products = {
-            basic: {
-                name: "Wireless Headphones Basic Edition",
-                price: 999000,
-                discount: 0.10
-            },
-            premium: {
-                name: "Wireless Headphones Premium Edition",
-                price: 1299000,
-                discount: 0.15
-            },
-            pro: {
-                name: "Wireless Headphones Pro Edition",
-                price: 1799000,
-                discount: 0.20
-            }
-        };
-
-        let selectedPackage = 'premium';
+        // Variabel global
+        let currentProduct = null;
+        let selectedVariantIndex = 0;
         let quantity = 1;
         let selectedPayment = 'qris';
 
-        // Pilih paket produk
-        function selectPackage(packageId) {
-            selectedPackage = packageId;
+        // Fungsi untuk mengambil parameter ID dari URL
+        function getProductIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Fungsi untuk mengambil data produk dari API
+        async function fetchProduct(productId) {
+            try {
+                // Ganti URL_API dengan URL API serverless Anda di Vercel
+                const API_URL = '/api/products'; // URL relatif jika di deploy di domain yang sama
+                // Jika API di deploy di domain berbeda, gunakan URL lengkap:
+                // const API_URL = 'https://your-app.vercel.app/api/products';
+                
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data produk');
+                }
+                
+                const products = await response.json();
+                const product = products.find(p => p.id === productId);
+                
+                if (!product) {
+                    throw new Error('Produk tidak ditemukan');
+                }
+                
+                return product;
+            } catch (error) {
+                console.error('Error fetching product:', error);
+                throw error;
+            }
+        }
+
+        // Fungsi untuk menampilkan produk di halaman
+        function renderProduct(product) {
+            // Set informasi produk dasar
+            document.getElementById('product-name').textContent = product.nama;
+            document.getElementById('product-short-desc').textContent = product.deskripsi_singkat;
+            document.getElementById('product-full-desc').innerHTML = product.deskripsi_lengkap;
+            
+            // Set gambar produk
+            const productImg = document.getElementById('product-img');
+            const productIcon = document.getElementById('product-icon');
+            
+            if (product.gambar && product.gambar.trim() !== '') {
+                productImg.src = product.gambar;
+                productImg.style.display = 'block';
+                productIcon.style.display = 'none';
+            } else {
+                productImg.style.display = 'none';
+                productIcon.style.display = 'flex';
+            }
+            
+            // Set status stok
+            const stockBadge = document.getElementById('product-stock');
+            stockBadge.className = 'stock-badge';
+            
+            let stockText = '';
+            switch (product.stok) {
+                case 'in-stock':
+                    stockBadge.classList.add('in-stock');
+                    stockText = 'In Stock ✅';
+                    break;
+                case 'low-stock':
+                    stockBadge.classList.add('low-stock');
+                    stockText = 'Stok Terbatas ⚠️';
+                    break;
+                case 'out-of-stock':
+                    stockBadge.classList.add('out-of-stock');
+                    stockText = 'Stok Habis ❌';
+                    break;
+                default:
+                    stockBadge.classList.add('in-stock');
+                    stockText = 'In Stock ✅';
+            }
+            stockBadge.textContent = stockText;
+            
+            // Render varian produk
+            renderProductVariants(product.varian);
+            
+            // Update tampilan harga
+            updateProductDetails();
+            updateOrderSummary();
+        }
+
+        // Fungsi untuk merender varian produk
+        function renderProductVariants(variants) {
+            const variantsContainer = document.getElementById('product-variants-container');
+            variantsContainer.innerHTML = '';
+            
+            if (!variants || variants.length === 0) {
+                variantsContainer.style.display = 'none';
+                return;
+            }
+            
+            variantsContainer.style.display = 'block';
+            
+            const label = document.createElement('div');
+            label.className = 'package-label';
+            label.textContent = 'Pilih Varian:';
+            variantsContainer.appendChild(label);
+            
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'package-options';
+            
+            variants.forEach((variant, index) => {
+                const option = document.createElement('div');
+                option.className = `package-option ${index === 0 ? 'selected' : ''}`;
+                option.dataset.index = index;
+                option.textContent = variant.name;
+                option.addEventListener('click', () => selectVariant(index));
+                optionsContainer.appendChild(option);
+            });
+            
+            variantsContainer.appendChild(optionsContainer);
+        }
+
+        // Fungsi untuk memilih varian
+        function selectVariant(index) {
+            selectedVariantIndex = index;
             
             // Update UI
             document.querySelectorAll('.package-option').forEach(option => {
                 option.classList.remove('selected');
             });
-            document.querySelector(`.package-option[data-package="${packageId}"]`).classList.add('selected');
+            document.querySelector(`.package-option[data-index="${index}"]`).classList.add('selected');
             
-            // Update harga dan nama produk
+            // Update harga
             updateProductDetails();
             updateOrderSummary();
         }
@@ -1005,15 +1136,31 @@
 
         // Update detail produk
         function updateProductDetails() {
-            const product = products[selectedPackage];
-            const oldPrice = Math.round(product.price / (1 - product.discount));
-            const discountAmount = Math.round(product.price * product.discount);
-            const total = product.price * quantity;
+            if (!currentProduct || !currentProduct.varian || currentProduct.varian.length === 0) return;
             
-            // Update tampilan
-            document.getElementById('product-price').textContent = `Rp ${formatCurrency(product.price)}`;
-            document.querySelector('.old-price').textContent = `Rp ${formatCurrency(oldPrice)}`;
-            document.getElementById('product-discount').textContent = `${Math.round(product.discount * 100)}%`;
+            const variant = currentProduct.varian[selectedVariantIndex];
+            const originalPrice = variant.harga_asli;
+            const discountedPrice = variant.harga_diskon;
+            
+            // Hitung persentase diskon
+            const discountPercentage = originalPrice > discountedPrice ? 
+                Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
+            
+            // Update tampilan harga
+            document.getElementById('product-original-price').textContent = `Rp ${formatCurrency(originalPrice)}`;
+            document.getElementById('product-price').textContent = `Rp ${formatCurrency(discountedPrice)}`;
+            
+            // Tampilkan badge diskon hanya jika ada diskon
+            const discountBadge = document.getElementById('product-discount');
+            if (discountPercentage > 0) {
+                discountBadge.textContent = `${discountPercentage}%`;
+                discountBadge.style.display = 'inline';
+            } else {
+                discountBadge.style.display = 'none';
+            }
+            
+            // Update total
+            const total = discountedPrice * quantity;
             document.getElementById('product-total').textContent = `Total: Rp ${formatCurrency(total)}`;
         }
 
@@ -1034,10 +1181,12 @@
 
         // Update ringkasan pesanan
         function updateOrderSummary() {
-            const product = products[selectedPackage];
-            const subtotal = product.price * quantity;
-            const discountAmount = Math.round(subtotal * product.discount);
-            const total = subtotal - discountAmount;
+            if (!currentProduct || !currentProduct.varian || currentProduct.varian.length === 0) return;
+            
+            const variant = currentProduct.varian[selectedVariantIndex];
+            const subtotal = variant.harga_diskon * quantity;
+            const discountAmount = (variant.harga_asli - variant.harga_diskon) * quantity;
+            const total = subtotal;
             
             // Update tampilan
             document.getElementById('subtotal').textContent = `Rp ${formatCurrency(subtotal)}`;
@@ -1052,22 +1201,26 @@
 
         // Fungsi untuk menambahkan produk ke keranjang
         function addToCart() {
-            const product = products[selectedPackage];
-            const subtotal = product.price * quantity;
-            const discountAmount = Math.round(subtotal * product.discount);
+            if (!currentProduct) return;
+            
+            const variant = currentProduct.varian[selectedVariantIndex];
+            const subtotal = variant.harga_diskon * quantity;
+            const discountAmount = (variant.harga_asli - variant.harga_diskon) * quantity;
             const total = subtotal - discountAmount;
 
             const item = {
-                name: product.name,
-                package: selectedPackage,
+                id: currentProduct.id,
+                name: currentProduct.nama,
+                variant: variant.name,
                 qty: quantity,
-                price: product.price,
-                discount: product.discount,
+                price: variant.harga_diskon,
+                originalPrice: variant.harga_asli,
+                discount: ((variant.harga_asli - variant.harga_diskon) / variant.harga_asli) * 100,
                 total: total
             };
 
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const existing = cart.find(p => p.name === item.name && p.package === item.package);
+            const existing = cart.find(p => p.id === item.id && p.variant === item.variant);
             if (existing) {
                 existing.qty += item.qty;
                 existing.total += item.total;
@@ -1087,11 +1240,13 @@
 
         // Proses pembayaran
         function processPayment() {
+            if (!currentProduct) return;
+            
             // Validasi form
             const fullname = document.getElementById('fullname').value;
             const phone = document.getElementById('phone').value;
             const city = document.getElementById('city').value;
-            const message = document.getElementById('message').value; // MODIFIKASI: Ambil nilai pesan opsional
+            const message = document.getElementById('message').value;
             
             if (!fullname || !phone || !city) {
                 alert('Harap lengkapi semua data pembeli!');
@@ -1099,15 +1254,15 @@
             }
             
             // Buat pesan WhatsApp
-            const product = products[selectedPackage];
-            const subtotal = product.price * quantity;
-            const discountAmount = Math.round(subtotal * product.discount);
+            const variant = currentProduct.varian[selectedVariantIndex];
+            const subtotal = variant.harga_diskon * quantity;
+            const discountAmount = (variant.harga_asli - variant.harga_diskon) * quantity;
             const total = subtotal - discountAmount;
             
             const paymentMethod = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
             
-            // MODIFIKASI: Tambahkan pesan opsional ke template pesan WhatsApp jika ada
-            let messageTemplate = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0AProduk: ${product.name}%0ATotal: Rp ${formatCurrency(total)}%0AMetode Pembayaran: ${paymentMethod}%0A%0ANama: ${fullname}%0ANomor WhatsApp: ${phone}%0AKota: ${city}`;
+            // Tambahkan pesan opsional ke template pesan WhatsApp jika ada
+            let messageTemplate = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0AProduk: ${currentProduct.nama}%0AVarian: ${variant.name}%0ATotal: Rp ${formatCurrency(total)}%0AMetode Pembayaran: ${paymentMethod}%0A%0ANama: ${fullname}%0ANomor WhatsApp: ${phone}%0AKota: ${city}`;
             
             if (message) {
                 messageTemplate += `%0APesan: ${message}`;
@@ -1129,11 +1284,38 @@
         }
 
         // Inisialisasi halaman
-        document.addEventListener('DOMContentLoaded', () => {
-            updateProductDetails();
-            updateOrderSummary();
-            selectPayment('qris');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const productId = getProductIdFromURL();
+            
+            if (!productId) {
+                showError('ID produk tidak ditemukan di URL.');
+                return;
+            }
+            
+            try {
+                // Ambil data produk dari API
+                currentProduct = await fetchProduct(productId);
+                
+                // Render produk ke halaman
+                renderProduct(currentProduct);
+                
+                // Tampilkan halaman produk
+                document.getElementById('loading-container').style.display = 'none';
+                document.getElementById('checkout-container').style.display = 'grid';
+                
+                // Inisialisasi pembayaran
+                selectPayment('qris');
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showError(error.message || 'Terjadi kesalahan saat memuat produk.');
+            }
         });
+
+        // Fungsi untuk menampilkan error
+        function showError(message) {
+            document.getElementById('loading-container').style.display = 'none';
+            document.getElementById('error-container').style.display = 'flex';
+        }
     </script>
 </body>
 </html>

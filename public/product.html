@@ -562,6 +562,16 @@
             box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
         }
 
+        /* Hide category buttons except "Semua" by default */
+        .category-btn:not([data-category="all"]) {
+            display: none;
+        }
+
+        /* Show all category buttons when filter is active */
+        .category-filter.filter-active .category-btn {
+            display: inline-block;
+        }
+
         /* Product Cards Grid - SHOPEE STYLE */
         .products-section {
             background-color: var(--bg-card);
@@ -1164,12 +1174,13 @@
             </div>
             
             <!-- Category Filter -->
-            <div class="category-filter">
+            <div class="category-filter" id="categoryFilter">
                 <button class="category-btn active" data-category="all">Semua</button>
-                <button class="category-btn" data-category="elektronik">Elektronik</button>
-                <button class="category-btn" data-category="fashion">Fashion</button>
-                <button class="category-btn" data-category="buku">Buku</button>
-                <button class="category-btn" data-category="aksesoris">Aksesoris</button>
+                <button class="category-btn" data-category="config">Config</button>
+                <button class="category-btn" data-category="vpn">VPN</button>
+                <button class="category-btn" data-category="server">Server</button>
+                <button class="category-btn" data-category="jasa">Jasa</button>
+                <button class="category-btn" data-category="panel">Panel</button>
             </div>
             
             <!-- Banner Slider - PERBAIKAN TATA LETAK -->
@@ -1289,6 +1300,7 @@
         let filteredProducts = [];
         let currentCategory = 'all';
         let searchQuery = '';
+        let isFilterActive = false;
 
         // DOM Elements
         const productsGrid = document.getElementById('productsGrid');
@@ -1298,6 +1310,8 @@
         const refreshBtn = document.getElementById('refreshBtn');
         const retryBtn = document.getElementById('retryBtn');
         const categoryButtons = document.querySelectorAll('.category-btn');
+        const filterBtn = document.getElementById('filterBtn');
+        const categoryFilter = document.getElementById('categoryFilter');
 
         // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
@@ -1535,7 +1549,6 @@
                 const productCard = document.createElement('a');
                 productCard.href = `product-page-template.html?id=${product.id}`;
                 productCard.className = 'product-card';
-                productCard.setAttribute('data-category', product.kategori || 'all');
                 
                 // Product image
                 const productImage = product.gambar 
@@ -1600,9 +1613,11 @@
             
             // Apply category filter
             if (currentCategory !== 'all') {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.kategori === currentCategory
-                );
+                filteredProducts = filteredProducts.filter(product => {
+                    // Cari produk yang mengandung kata kategori di nama atau deskripsi
+                    const searchText = (product.nama + ' ' + (product.deskripsi_singkat || '')).toLowerCase();
+                    return searchText.includes(currentCategory.toLowerCase());
+                });
             }
             
             // Apply search filter
@@ -1616,6 +1631,19 @@
             
             // Render filtered products
             renderProducts(filteredProducts);
+        }
+
+        // Toggle filter visibility
+        function toggleFilterVisibility() {
+            isFilterActive = !isFilterActive;
+            
+            if (isFilterActive) {
+                categoryFilter.classList.add('filter-active');
+                filterBtn.innerHTML = '<i class="fas fa-times"></i> Tutup Filter';
+            } else {
+                categoryFilter.classList.remove('filter-active');
+                filterBtn.innerHTML = '<i class="fas fa-filter"></i> Filter';
+            }
         }
 
         // Event listeners for category filter
@@ -1632,6 +1660,11 @@
                 
                 // Apply filters
                 applyFilters();
+                
+                // Hide filter buttons after selection (optional)
+                if (window.innerWidth <= 768) {
+                    toggleFilterVisibility();
+                }
             });
         });
 
@@ -1649,6 +1682,11 @@
         // Event listener for retry button
         retryBtn.addEventListener('click', () => {
             fetchProducts();
+        });
+
+        // Event listener for filter button
+        filterBtn.addEventListener('click', () => {
+            toggleFilterVisibility();
         });
 
         // Initialize the page

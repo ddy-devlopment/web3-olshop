@@ -783,6 +783,129 @@
             background: #DC2626; 
         }
 
+        /* Delete Confirmation Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .delete-modal {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .delete-modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--warning);
+            font-size: 18px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 14px;
+            min-width: 100px;
+        }
+
+        .modal-btn-cancel {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-btn-cancel:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-btn-delete {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .modal-btn-delete:hover {
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive modal styles */
+        @media (max-width: 480px) {
+            .delete-modal {
+                padding: 20px;
+                margin: 0 16px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+
         /* Mobile Styles */
         .mobile-header {
             display: none;
@@ -1163,6 +1286,25 @@
         <div class="notification-text">Produk berhasil ditambahkan!</div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="delete-modal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="modal-title">Konfirmasi Hapus</h3>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" id="cancelDeleteBtn">Batal</button>
+                <button class="modal-btn modal-btn-delete" id="confirmDeleteBtn">Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // API Base URL
         const API_BASE = "/api/products";
@@ -1219,9 +1361,57 @@
         // Notification element
         const notification = document.getElementById('notification');
         
+        // Delete modal elements
+        const deleteModal = document.getElementById('deleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        let productToDelete = null;
+        
         // Global variables
         let currentEditId = null;
         let isLoading = false;
+        
+        // Function to show delete confirmation modal
+        function showDeleteModal(id) {
+            productToDelete = id;
+            deleteModal.classList.add('active');
+            
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to hide delete confirmation modal
+        function hideDeleteModal() {
+            deleteModal.classList.remove('active');
+            productToDelete = null;
+            
+            // Restore body scrolling
+            document.body.style.overflow = '';
+        }
+
+        // Event listeners for delete modal
+        cancelDeleteBtn.addEventListener('click', hideDeleteModal);
+
+        confirmDeleteBtn.addEventListener('click', () => {
+            if (productToDelete) {
+                deleteProduct(productToDelete);
+                hideDeleteModal();
+            }
+        });
+
+        // Close modal when clicking outside
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                hideDeleteModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && deleteModal.classList.contains('active')) {
+                hideDeleteModal();
+            }
+        });
         
         // Fungsi untuk mengkonversi angka rating ke bintang
         function getStarRating(rating) {
@@ -1355,7 +1545,7 @@
                                     <button class="edit-btn" onclick="editProduct('${product.id}')">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
-                                    <button class="delete-btn" onclick="deleteProduct('${product.id}')">
+                                    <button class="delete-btn" onclick="showDeleteModal('${product.id}')">
                                         <i class="fas fa-trash"></i> Hapus
                                     </button>
                                 </div>
@@ -1451,12 +1641,13 @@
         
         // Function to delete a product
         async function deleteProduct(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
-                return;
-            }
-            
             if (isLoading) return;
             isLoading = true;
+            
+            // Show loading state on delete button if modal is open
+            const originalDeleteBtnText = confirmDeleteBtn.innerHTML;
+            confirmDeleteBtn.innerHTML = '<div class="loading"></div> Menghapus...';
+            confirmDeleteBtn.disabled = true;
             
             try {
                 const response = await fetch(`${API_BASE}?id=${id}`, {
@@ -1478,6 +1669,9 @@
                 alert('Error menghapus produk!');
             } finally {
                 isLoading = false;
+                // Restore delete button state
+                confirmDeleteBtn.innerHTML = originalDeleteBtnText;
+                confirmDeleteBtn.disabled = false;
             }
         }
         

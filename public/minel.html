@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ProductDash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0E0E0E;
+            --bg-card: #1B1B1B;
+            --bg-sidebar: #151515;
+            --primary: #6C63FF;
+            --primary-dark: #5A4DFF;
+            --accent: #8B5CF6;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 0 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-label {
+            font-weight: 500;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 260px;
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        /* Admin Container Styles */
+        .admin-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+
+        .form-textarea {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Variant Styles */
+        .variant-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .variant-item .form-input {
+            margin-bottom: 0;
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            flex: 1;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Preview Styles */
+        .preview-section {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-title i {
+            color: var(--primary);
+        }
+
+        .product-preview {
+            background-color: var(--bg-sidebar);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .product-badge.in-stock {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .product-badge.low-stock {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .product-badge.out-of-stock {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: var(--danger);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .product-info-preview {
+            padding: 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name-preview {
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 16px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 44px;
+        }
+
+        .product-rating-preview {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .rating-stars {
+            color: var(--warning);
+            margin-right: 4px;
+        }
+
+        .sold-count {
+            margin-left: 8px;
+        }
+
+        .product-prices-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .old-price-preview {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .new-price-preview {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Variant Preview */
+        .variant-preview {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .variant-preview-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .variant-preview-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .variant-name-preview {
+            font-size: 14px;
+        }
+
+        .variant-price-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Description Preview Styles */
+        .description-preview {
+            margin-top: 20px;
+        }
+
+        .description-section {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .description-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .description-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .description-content.short {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .description-content.full {
+            white-space: pre-line;
+        }
+
+        /* Existing Products Styles */
+        .existing-products-section {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-top: 24px;
+        }
+
+        .existing-products-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .existing-product-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            background-color: rgba(255, 255, 255, 0.03);
+            transition: var(--transition);
+            align-items: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .existing-product-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .existing-product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .existing-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .existing-product-details {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .existing-product-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .existing-product-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .existing-product-prices {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .existing-old-price {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .existing-new-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .existing-product-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .existing-product-stock {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .existing-product-stock.in-stock {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .existing-product-stock.low-stock {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .existing-product-stock.out-of-stock {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .existing-product-variants {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .existing-product-sold {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .no-products-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Edit and Delete Buttons */
+        .product-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .edit-btn, .delete-btn {
+            border: none;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn { 
+            background: #3B82F6; 
+        }
+        
+        .edit-btn:hover { 
+            background: #2563EB; 
+        }
+        
+        .delete-btn { 
+            background: #EF4444; 
+        }
+        
+        .delete-btn:hover { 
+            background: #DC2626; 
+        }
+
+        /* Mobile Styles */
+        .mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--bg-sidebar);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .mobile-logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-section {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+            
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .variant-item {
+                flex-direction: column;
+            }
+            
+            /* Responsive adjustments for existing products */
+            .existing-product-item {
+                padding: 10px;
+            }
+            
+            .existing-product-image {
+                width: 50px;
+                height: 50px;
+                font-size: 14px;
+            }
+            
+            .existing-product-name {
+                font-size: 13px;
+            }
+            
+            .existing-product-desc {
+                font-size: 11px;
+            }
+            
+            .existing-new-price {
+                font-size: 13px;
+            }
+            
+            .existing-old-price {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 16px;
+            }
+            
+            .form-section, .preview-section {
+                padding: 16px;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .existing-product-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+
+        /* Perbaikan tampilan mobile untuk header */
+        @media (max-width: 768px) {
+            .page-title {
+                margin-top: 20px;
+                padding-top: 20px;
+            }
+            
+            .header {
+                padding-top: 10px;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-logo">ProductDash</div>
+        <a href="product.html" class="btn">
+            <i class="fas fa-arrow-left"></i>
+            Dashboard
+        </a>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h1>ProductDash</h1>
+        </div>
+        
+        <div class="nav-menu">
+            <div class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span class="nav-label">Dashboard</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-box"></i>
+                <span class="nav-label">Upload Produk</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span class="nav-label">Analytics</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-bullhorn"></i>
+                <span class="nav-label">Campaigns</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Audience</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span class="nav-label">Statistics</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span class="nav-label">Settings</span>
+            </div>
+        </div>
+        
+        <a href="product.html" class="btn btn-primary" style="margin-top: auto; justify-content: center;">
+            <i class="fas fa-arrow-left"></i>
+            Kembali ke Dashboard
+        </a>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1>Upload Produk Baru</h1>
+                <p>Tambah produk baru ke katalog ProductDash</p>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn" id="refresh-btn">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh Data
+                </button>
+            </div>
+        </div>
+        
+        <!-- Admin Container -->
+        <div class="admin-container">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-plus"></i>
+                    Form Add Produk
+                </h2>
+                
+                <form id="product-form">
+                    <div class="form-group">
+                        <label class="form-label" for="product-name">Nama Produk</label>
+                        <input type="text" id="product-name" class="form-input" placeholder="Masukkan nama produk" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="product-stock">Status Stok</label>
+                        <select id="product-stock" class="form-select" required>
+                            <option value="">Pilih status stok</option>
+                            <option value="in-stock">In Stock</option>
+                            <option value="low-stock">Low Stock</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="product-sold">Jumlah Terjual</label>
+                        <input type="number" id="product-sold" class="form-input" placeholder="Masukkan jumlah terjual" value="0" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="product-image">URL Gambar Produk</label>
+                        <input type="url" id="product-image" class="form-input" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="short-description">Deskripsi Singkat</label>
+                        <input type="text" id="short-description" class="form-input" placeholder="Deskripsi singkat produk" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="full-description">Deskripsi Lengkap</label>
+                        <textarea id="full-description" class="form-textarea" placeholder="Deskripsi lengkap produk" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Varian Produk</label>
+                        <div id="variant-list"></div>
+                        <button type="button" id="add-variant-btn" class="btn btn-primary" style="margin-top:10px;">
+                            <i class="fas fa-plus"></i> Tambah Varian
+                        </button>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button type="button" class="btn-submit" id="submit-btn">
+                            <i class="fas fa-upload"></i>
+                            Upload Produk
+                        </button>
+                        <button type="button" class="btn-reset" id="reset-btn">
+                            <i class="fas fa-redo"></i>
+                            Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <h2 class="preview-title">
+                    <i class="fas fa-eye"></i>
+                    Preview Produk
+                </h2>
+                
+                <div class="product-preview">
+                    <div class="product-image-preview" id="preview-image">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="product-badge in-stock" id="preview-stock-badge">In Stock</div>
+                    <div class="product-info-preview">
+                        <div class="product-name-preview" id="preview-name">Nama Produk</div>
+                        <div class="product-rating-preview">
+                            <span class="rating-stars">★★★★★</span>
+                            <span class="sold-count" id="preview-sold">Terjual 0</span>
+                        </div>
+                        <div class="product-prices-preview">
+                            <span class="new-price-preview" id="preview-new-price">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deskripsi Preview -->
+                <div class="description-preview">
+                    <div class="description-section">
+                        <div class="description-title">Deskripsi Singkat</div>
+                        <div class="description-content short" id="preview-short-desc">Deskripsi singkat produk akan muncul di sini</div>
+                    </div>
+                    
+                    <div class="description-section">
+                        <div class="description-title">Deskripsi Lengkap</div>
+                        <div class="description-content full" id="preview-full-desc">Deskripsi lengkap produk akan muncul di sini</div>
+                    </div>
+                </div>
+                
+                <div class="variant-preview">
+                    <h3 class="variant-preview-title">Pilihan Varian:</h3>
+                    <div id="preview-variants">
+                        <p style="color: var(--text-muted); font-size: 14px;">Tidak ada varian tersedia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daftar Produk yang Sudah Ada -->
+        <div class="existing-products-section">
+            <h3 class="section-title">
+                <i class="fas fa-list"></i>
+                Daftar Produk yang Sudah Ada
+            </h3>
+            
+            <div class="existing-products-list" id="existing-products-list">
+                <div class="no-products-message">Memuat data produk...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="notification-text">Produk berhasil ditambahkan!</div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = "/api/products";
+        
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-visible');
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (event) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                    sidebar.classList.remove('mobile-visible');
+                }
+            }
+        });
+
+        // Form elements
+        const productForm = document.getElementById('product-form');
+        const productName = document.getElementById('product-name');
+        const productStock = document.getElementById('product-stock');
+        const productSold = document.getElementById('product-sold');
+        const productImage = document.getElementById('product-image');
+        const shortDescription = document.getElementById('short-description');
+        const fullDescription = document.getElementById('full-description');
+        const submitBtn = document.getElementById('submit-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        
+        // Variant elements
+        const variantList = document.getElementById('variant-list');
+        const addVariantBtn = document.getElementById('add-variant-btn');
+        
+        // Preview elements
+        const previewName = document.getElementById('preview-name');
+        const previewNewPrice = document.getElementById('preview-new-price');
+        const previewImage = document.getElementById('preview-image');
+        const previewShortDesc = document.getElementById('preview-short-desc');
+        const previewFullDesc = document.getElementById('preview-full-desc');
+        const previewSold = document.getElementById('preview-sold');
+        const previewVariants = document.getElementById('preview-variants');
+        const previewStockBadge = document.getElementById('preview-stock-badge');
+        
+        // Existing products elements
+        const existingProductsList = document.getElementById('existing-products-list');
+        
+        // Notification element
+        const notification = document.getElementById('notification');
+        
+        // Global variables
+        let currentEditId = null;
+        let isLoading = false;
+        
+        // Add variant functionality
+        addVariantBtn.addEventListener('click', () => {
+            const div = document.createElement('div');
+            div.className = 'variant-item';
+            div.innerHTML = `
+                <input type="text" class="form-input variant-name" placeholder="Nama varian (contoh: Paket + Config)" style="flex:2;" required>
+                <input type="number" class="form-input variant-original" placeholder="Harga Asli" style="flex:1;" required>
+                <input type="number" class="form-input variant-discount" placeholder="Harga Diskon (opsional)" style="flex:1;">
+                <button type="button" class="btn btn-reset remove-variant-btn" style="flex:0;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            variantList.appendChild(div);
+
+            const removeBtn = div.querySelector('.remove-variant-btn');
+            removeBtn.addEventListener('click', () => div.remove());
+            
+            // Add event listeners to update preview when variant inputs change
+            const variantInputs = div.querySelectorAll('.variant-name, .variant-original, .variant-discount');
+            variantInputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+            
+            updatePreview();
+        });
+        
+        // Function to load existing products from API
+        async function loadExistingProducts() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            existingProductsList.innerHTML = '<div class="no-products-message">Memuat data produk...</div>';
+            
+            try {
+                const response = await fetch(API_BASE);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const products = await response.json();
+                existingProductsList.innerHTML = '';
+                
+                if (products.length === 0) {
+                    existingProductsList.innerHTML = '<div class="no-products-message">Belum ada produk tersimpan.</div>';
+                    isLoading = false;
+                    return;
+                }
+                
+                products.forEach(product => {
+                    // Find the lowest price among variants
+                    let lowestOriginalPrice = Number.MAX_SAFE_INTEGER;
+                    let lowestDiscountedPrice = Number.MAX_SAFE_INTEGER;
+                    
+                    product.varian.forEach(variant => {
+                        if (variant.harga_asli < lowestOriginalPrice) {
+                            lowestOriginalPrice = variant.harga_asli;
+                        }
+                        if (variant.harga_diskon < lowestDiscountedPrice) {
+                            lowestDiscountedPrice = variant.harga_diskon;
+                        }
+                    });
+                    
+                    const hasDiscount = lowestDiscountedPrice < lowestOriginalPrice;
+                    const productItem = document.createElement('div');
+                    productItem.className = 'existing-product-item';
+                    
+                    // Stock badge text and class
+                    let stockClass, stockText;
+                    switch(product.stok) {
+                        case 'in-stock':
+                            stockClass = 'in-stock';
+                            stockText = 'In Stock';
+                            break;
+                        case 'low-stock':
+                            stockClass = 'low-stock';
+                            stockText = 'Low Stock';
+                            break;
+                        case 'out-of-stock':
+                            stockClass = 'out-of-stock';
+                            stockText = 'Out of Stock';
+                            break;
+                    }
+                    
+                    productItem.innerHTML = `
+                        <div class="existing-product-image">
+                            ${product.gambar ? `<img src="${product.gambar}" alt="${product.nama}" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\\'fas fa-cube\\'></i>'">` : '<i class="fas fa-cube"></i>'}
+                        </div>
+                        <div class="existing-product-details">
+                            <div class="existing-product-name">${product.nama}</div>
+                            <div class="existing-product-desc">${product.deskripsi_singkat}</div>
+                            <div class="existing-product-prices">
+                                ${hasDiscount ? `<span class="existing-old-price">Rp ${formatCurrency(lowestOriginalPrice)}</span>` : ''}
+                                <span class="existing-new-price">Rp ${formatCurrency(lowestDiscountedPrice)}</span>
+                            </div>
+                            <div class="existing-product-meta">
+                                <span class="existing-product-stock ${stockClass}">${stockText}</span>
+                                <div style="display: flex; gap: 8px;">
+                                    <span class="existing-product-variants">${product.varian.length} varian</span>
+                                    <span class="existing-product-sold">Terjual ${product.terjual || 0}</span>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="edit-btn" onclick="editProduct('${product.id}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="delete-btn" onclick="deleteProduct('${product.id}')">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </div>
+                            </div>
+                            ${product.url ? `<div style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">URL: <a href="${product.url}" target="_blank" style="color: var(--primary);">${product.url}</a></div>` : ''}
+                        </div>
+                    `;
+                    
+                    existingProductsList.appendChild(productItem);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                existingProductsList.innerHTML = '<div class="no-products-message">Error memuat produk. Coba refresh halaman.</div>';
+            } finally {
+                isLoading = false;
+            }
+        }
+        
+        // Function to edit a product
+        async function editProduct(id) {
+            if (isLoading) return;
+            
+            isLoading = true;
+            
+            try {
+                const response = await fetch(API_BASE);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const products = await response.json();
+                const product = products.find(p => p.id === id);
+                
+                if (!product) {
+                    alert('Produk tidak ditemukan!');
+                    isLoading = false;
+                    return;
+                }
+                
+                // Set current edit ID
+                currentEditId = id;
+                
+                // Fill form with product data
+                productName.value = product.nama;
+                productStock.value = product.stok;
+                productSold.value = product.terjual;
+                productImage.value = product.gambar;
+                shortDescription.value = product.deskripsi_singkat;
+                fullDescription.value = product.deskripsi_lengkap;
+                
+                // Clear existing variants and add product variants
+                variantList.innerHTML = '';
+                product.varian.forEach(variant => {
+                    const div = document.createElement('div');
+                    div.className = 'variant-item';
+                    div.innerHTML = `
+                        <input type="text" class="form-input variant-name" placeholder="Nama varian" style="flex:2;" value="${variant.name}" required>
+                        <input type="number" class="form-input variant-original" placeholder="Harga Asli" style="flex:1;" value="${variant.harga_asli}" required>
+                        <input type="number" class="form-input variant-discount" placeholder="Harga Diskon (opsional)" style="flex:1;" value="${variant.harga_diskon}">
+                        <button type="button" class="btn btn-reset remove-variant-btn" style="flex:0;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    variantList.appendChild(div);
+
+                    const removeBtn = div.querySelector('.remove-variant-btn');
+                    removeBtn.addEventListener('click', () => div.remove());
+                    
+                    // Add event listeners to update preview when variant inputs change
+                    const variantInputs = div.querySelectorAll('.variant-name, .variant-original, .variant-discount');
+                    variantInputs.forEach(input => {
+                        input.addEventListener('input', updatePreview);
+                    });
+                });
+                
+                // Change submit button text
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Produk';
+                
+                // Update preview
+                updatePreview();
+                
+                // Scroll to form
+                document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing product:', error);
+                alert('Error memuat data produk!');
+            } finally {
+                isLoading = false;
+            }
+        }
+        
+        // Function to delete a product
+        async function deleteProduct(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+                return;
+            }
+            
+            if (isLoading) return;
+            isLoading = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}?id=${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    // Show notification
+                    showNotification('Produk berhasil dihapus!');
+                    
+                    // Reload existing products list
+                    loadExistingProducts();
+                } else {
+                    const error = await response.json();
+                    alert('Error menghapus produk: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error menghapus produk!');
+            } finally {
+                isLoading = false;
+            }
+        }
+        
+        // Update preview in real-time
+        productName.addEventListener('input', updatePreview);
+        productImage.addEventListener('input', updatePreview);
+        shortDescription.addEventListener('input', updatePreview);
+        fullDescription.addEventListener('input', updatePreview);
+        productStock.addEventListener('change', updatePreview);
+        productSold.addEventListener('input', updatePreview);
+        
+        function updatePreview() {
+            // Update product name
+            previewName.textContent = productName.value || 'Nama Produk';
+            
+            // Update image
+            if (productImage.value) {
+                previewImage.innerHTML = `<img src="${productImage.value}" alt="${productName.value || 'Produk'}" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\\'fas fa-cube\\'></i>'">`;
+            } else {
+                previewImage.innerHTML = '<i class="fas fa-cube"></i>';
+            }
+            
+            // Update short description
+            previewShortDesc.textContent = shortDescription.value || 'Deskripsi singkat produk akan muncul di sini';
+            
+            // Update full description
+            previewFullDesc.textContent = fullDescription.value || 'Deskripsi lengkap produk akan muncul di sini';
+            
+            // Update sold count
+            const soldValue = productSold.value || 0;
+            previewSold.textContent = `Terjual ${soldValue}`;
+            
+            // Update stock badge
+            updateStockBadge();
+            
+            // Update variant preview
+            updateVariantPreview();
+            
+            // Update price preview
+            updatePricePreview();
+        }
+        
+        function updateStockBadge() {
+            const stockValue = productStock.value;
+            if (stockValue) {
+                let badgeClass, badgeText;
+                
+                switch(stockValue) {
+                    case 'in-stock':
+                        badgeClass = 'in-stock';
+                        badgeText = 'In Stock';
+                        break;
+                    case 'low-stock':
+                        badgeClass = 'low-stock';
+                        badgeText = 'Low Stock';
+                        break;
+                    case 'out-of-stock':
+                        badgeClass = 'out-of-stock';
+                        badgeText = 'Out of Stock';
+                        break;
+                }
+                
+                previewStockBadge.className = `product-badge ${badgeClass}`;
+                previewStockBadge.textContent = badgeText;
+                previewStockBadge.style.display = 'block';
+            } else {
+                previewStockBadge.style.display = 'none';
+            }
+        }
+        
+        function updateVariantPreview() {
+            const variantItems = document.querySelectorAll('.variant-item');
+            previewVariants.innerHTML = '';
+            
+            if (variantItems.length === 0) {
+                previewVariants.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Tidak ada varian tersedia</p>';
+                return;
+            }
+            
+            variantItems.forEach((item, index) => {
+                const name = item.querySelector('.variant-name').value || `Varian ${index + 1}`;
+                const original = parseFloat(item.querySelector('.variant-original').value) || 0;
+                const discount = parseFloat(item.querySelector('.variant-discount').value) || original;
+                
+                const variantDiv = document.createElement('div');
+                variantDiv.className = 'variant-preview-item';
+                
+                const hasDiscount = discount < original && original > 0;
+                
+                variantDiv.innerHTML = `
+                    <span class="variant-name-preview">${name}</span>
+                    <div class="variant-price-preview">
+                        ${hasDiscount ? `<span class="old-price-preview">Rp ${formatCurrency(original)}</span>` : ''}
+                        <span class="new-price-preview">Rp ${formatCurrency(discount)}</span>
+                    </div>
+                `;
+                
+                previewVariants.appendChild(variantDiv);
+            });
+        }
+        
+        function updatePricePreview() {
+            const variantItems = document.querySelectorAll('.variant-item');
+            
+            if (variantItems.length === 0) {
+                previewNewPrice.textContent = 'Rp 0';
+                return;
+            }
+            
+            // Find the lowest price among variants
+            let lowestPrice = Number.MAX_SAFE_INTEGER;
+            
+            variantItems.forEach(item => {
+                const original = parseFloat(item.querySelector('.variant-original').value) || 0;
+                const discount = parseFloat(item.querySelector('.variant-discount').value) || original;
+                
+                if (discount < lowestPrice) {
+                    lowestPrice = discount;
+                }
+            });
+            
+            if (lowestPrice !== Number.MAX_SAFE_INTEGER) {
+                previewNewPrice.textContent = `Rp ${formatCurrency(lowestPrice)}`;
+            } else {
+                previewNewPrice.textContent = 'Rp 0';
+            }
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notificationText = document.querySelector('.notification-text');
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Reset form
+        resetBtn.addEventListener('click', () => {
+            productForm.reset();
+            variantList.innerHTML = '';
+            currentEditId = null;
+            submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Produk';
+            updatePreview();
+        });
+        
+        // Refresh button
+        refreshBtn.addEventListener('click', () => {
+            loadExistingProducts();
+            showNotification('Data produk diperbarui');
+        });
+        
+        // Submit form
+        submitBtn.addEventListener('click', async () => {
+            if (isLoading) return;
+            
+            // Validate form
+            if (!productName.value || !productStock.value || !shortDescription.value || !fullDescription.value) {
+                alert('Harap lengkapi semua field yang wajib diisi!');
+                return;
+            }
+            
+            // Validate variants
+            const variantItems = document.querySelectorAll('.variant-item');
+            if (variantItems.length === 0) {
+                alert('Harap tambahkan minimal satu varian produk!');
+                return;
+            }
+            
+            const variants = [];
+            let hasValidVariant = false;
+            
+            variantItems.forEach(item => {
+                const name = item.querySelector('.variant-name').value.trim();
+                const original = parseFloat(item.querySelector('.variant-original').value || 0);
+                const discount = parseFloat(item.querySelector('.variant-discount').value || original);
+                
+                if (name && original > 0) {
+                    variants.push({ name, harga_asli: original, harga_diskon: discount });
+                    hasValidVariant = true;
+                }
+            });
+            
+            if (!hasValidVariant) {
+                alert('Harap isi semua varian dengan benar!');
+                return;
+            }
+            
+            // Create product object
+            const product = {
+                nama: productName.value,
+                stok: productStock.value,
+                terjual: parseInt(productSold.value) || 0,
+                gambar: productImage.value || '',
+                deskripsi_singkat: shortDescription.value,
+                deskripsi_lengkap: fullDescription.value,
+                varian: variants,
+                rating: 5
+            };
+            
+            isLoading = true;
+            const originalButtonText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loading"></div> Memproses...';
+            submitBtn.disabled = true;
+            
+            try {
+                let response;
+                
+                if (currentEditId) {
+                    // Update existing product
+                    response = await fetch(`${API_BASE}?id=${currentEditId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(product)
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Produk berhasil diperbarui!');
+                    } else {
+                        const error = await response.json();
+                        alert('Error memperbarui produk: ' + error.error);
+                        return;
+                    }
+                } else {
+                    // Add new product
+                    response = await fetch(API_BASE, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(product)
+                    });
+                    
+                    if (response.ok) {
+                        const newProduct = await response.json();
+                        showNotification('Produk berhasil ditambahkan!');
+                        console.log('URL Produk:', newProduct.url);
+                    } else {
+                        const error = await response.json();
+                        alert('Error menambah produk: ' + error.error);
+                        return;
+                    }
+                }
+                
+                // Reset form
+                productForm.reset();
+                variantList.innerHTML = '';
+                currentEditId = null;
+                submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Produk';
+                updatePreview();
+                
+                // Reload existing products list
+                loadExistingProducts();
+                
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert('Error menyimpan produk!');
+            } finally {
+                isLoading = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalButtonText;
+            }
+        });
+        
+        // Initialize preview and load existing products
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePreview();
+            loadExistingProducts();
+        });
+    </script>
+</body>
+</html>

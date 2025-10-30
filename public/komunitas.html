@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komunitas Digital - ProductDash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0E0E0E;
+            --bg-card: #1B1B1B;
+            --bg-sidebar: #151515;
+            --primary: #6C63FF;
+            --primary-dark: #5A4DFF;
+            --accent: #8B5CF6;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 0 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-label {
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .toggle-label i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background-color: var(--primary);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background-color: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 27px;
+            transition: var(--transition);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 260px;
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-card);
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            width: 300px;
+            box-shadow: var(--shadow);
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            padding: 0 12px;
+            width: 100%;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #0D966C);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Section Styles */
+        .section {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* WhatsApp Groups Section */
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .group-card {
+            background-color: var(--bg-sidebar);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .group-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--success), #0D966C);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .group-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .group-description {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Channel Section */
+        .channel-card {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: var(--border-radius);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 24px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .channel-content {
+            flex: 1;
+        }
+
+        .channel-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .channel-description {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* Testimonials Section */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            background-color: var(--bg-sidebar);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .testimonial-info {
+            flex: 1;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .testimonial-role {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .testimonial-quote {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-style: italic;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .testimonial-quote::before {
+            content: """;
+            position: absolute;
+            left: 0;
+            top: -5px;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        /* Events Section */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--bg-sidebar);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .event-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .event-date {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .event-day {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .event-month {
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .event-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .event-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .event-status.upcoming {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .event-status.completed {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        /* Join Section */
+        .join-section {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .join-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .join-description {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .join-btn {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .join-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.5);
+        }
+
+        /* Mobile Styles */
+        .mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--bg-sidebar);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .mobile-logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .groups-grid, .testimonials-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+            
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            
+            .search-bar {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .groups-grid, .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .channel-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .channel-icon {
+                margin-right: 0;
+                margin-bottom: 16px;
+            }
+            
+            .event-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .event-date {
+                margin-right: 0;
+                margin-bottom: 16px;
+            }
+            
+            .event-status {
+                margin-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="mobile-logo">ProductDash</div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h1>ProductDash</h1>
+        </div>
+        
+        <div class="nav-menu">
+            <div class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span class="nav-label">Dashboard</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-users"></i>
+                <span class="nav-label">Komunitas</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span class="nav-label">Event</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-comment-alt"></i>
+                <span class="nav-label">Testimoni</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-info-circle"></i>
+                <span class="nav-label">Tentang Kami</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-phone-alt"></i>
+                <span class="nav-label">Hubungi Kami</span>
+            </div>
+        </div>
+        
+        <div class="theme-toggle">
+            <div class="toggle-label">
+                <i class="fas fa-moon"></i>
+                <span>Dark Mode</span>
+            </div>
+            <div class="toggle-switch"></div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1>Komunitas Digital</h1>
+                <p>Tempat berkumpulnya para pengguna dan kreator digital untuk saling berbagi, belajar, dan berkolaborasi.</p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari topik atau anggota...">
+                </div>
+                <button class="btn">
+                    <i class="fas fa-filter"></i>
+                    Filter
+                </button>
+            </div>
+        </div>
+        
+        <!-- WhatsApp Groups Section -->
+        <div class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Grup WhatsApp Komunitas</div>
+                    <div class="section-subtitle">Bergabung dengan grup diskusi berdasarkan minat Anda</div>
+                </div>
+            </div>
+            
+            <div class="groups-grid">
+                <!-- Group 1 -->
+                <div class="group-card">
+                    <div class="group-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="group-name">Komunitas Belajar Digital</div>
+                    <div class="group-description">Diskusi seputar digital product, UI/UX, dan pengembangan teknologi. Tempat berbagi pengetahuan dan pengalaman dalam industri digital.</div>
+                    <button class="btn btn-success">
+                        <i class="fab fa-whatsapp"></i>
+                        Gabung Grup WhatsApp 1
+                    </button>
+                </div>
+                
+                <!-- Group 2 -->
+                <div class="group-card">
+                    <div class="group-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="group-name">Komunitas Kreator & Bisnis Online</div>
+                    <div class="group-description">Tempat berbagi strategi bisnis, desain, dan pemasaran digital. Kolaborasi dengan sesama kreator dan pengusaha online.</div>
+                    <button class="btn btn-success">
+                        <i class="fab fa-whatsapp"></i>
+                        Gabung Grup WhatsApp 2
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- WhatsApp Channel Section -->
+        <div class="section">
+            <div class="channel-card">
+                <div class="channel-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="channel-content">
+                    <div class="channel-title">Saluran Informasi WhatsApp</div>
+                    <div class="channel-description">Dapatkan update, tips, dan berita terbaru seputar komunitas digital langsung di WhatsApp Anda. Tidak ada obrolan, hanya informasi penting.</div>
+                    <button class="btn btn-primary">
+                        <i class="fab fa-whatsapp"></i>
+                        Ikuti Saluran WA
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Testimonials Section -->
+        <div class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Testimoni Anggota</div>
+                    <div class="section-subtitle">Pengalaman langsung dari anggota komunitas kami</div>
+                </div>
+            </div>
+            
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">AR</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Ahmad Rizki</div>
+                            <div class="testimonial-role">UI/UX Designer</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-quote">
+                        Komunitas ini sangat membantu saya dalam mengembangkan skill desain. Diskusi dengan sesama desainer memberikan perspektif baru yang berharga.
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">SD</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Sari Dewi</div>
+                            <div class="testimonial-role">Digital Marketer</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-quote">
+                        Berkat komunitas ini, saya menemukan mentor dan partner kolaborasi untuk mengembangkan bisnis online saya. Sangat direkomendasikan!
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">BP</div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Budi Pratama</div>
+                            <div class="testimonial-role">Web Developer</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-quote">
+                        Sebagai developer pemula, komunitas ini memberikan wawasan tentang tren teknologi terbaru dan membantu saya menyelesaikan masalah coding.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Events Section -->
+        <div class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Event & Aktivitas Komunitas</div>
+                    <div class="section-subtitle">Kegiatan terbaru yang diselenggarakan komunitas</div>
+                </div>
+            </div>
+            
+            <div class="events-list">
+                <!-- Event 1 -->
+                <div class="event-item">
+                    <div class="event-date">
+                        <div class="event-day">15</div>
+                        <div class="event-month">Jun</div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-title">Workshop Branding Digital</div>
+                        <div class="event-description">Pelajari cara membangun brand yang kuat di dunia digital dengan strategi yang efektif.</div>
+                    </div>
+                    <div class="event-status upcoming">Akan Datang</div>
+                </div>
+                
+                <!-- Event 2 -->
+                <div class="event-item">
+                    <div class="event-date">
+                        <div class="event-day">22</div>
+                        <div class="event-month">Jun</div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-title">Live Session Desain UI</div>
+                        <div class="event-description">Sesi langsung dengan desainer profesional membahas tren UI terbaru dan tips praktis.</div>
+                    </div>
+                    <div class="event-status upcoming">Akan Datang</div>
+                </div>
+                
+                <!-- Event 3 -->
+                <div class="event-item">
+                    <div class="event-date">
+                        <div class="event-day">05</div>
+                        <div class="event-month">Mei</div>
+                    </div>
+                    <div class="event-details">
+                        <div class="event-title">Kelas Strategi Bisnis Online</div>
+                        <div class="event-description">Panduan lengkap memulai dan mengembangkan bisnis online dari nol hingga sukses.</div>
+                    </div>
+                    <div class="event-status completed">Selesai</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Join Section -->
+        <div class="section join-section">
+            <div class="join-title">Bergabung dengan Komunitas Sekarang</div>
+            <div class="join-description">Jadilah bagian dari komunitas digital yang terus berkembang. Dapatkan akses ke sumber daya eksklusif, jaringan profesional, dan peluang kolaborasi.</div>
+            <button class="join-btn">
+                <i class="fas fa-users"></i>
+                Bergabung dengan Komunitas Sekarang
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-visible');
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (event) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                    sidebar.classList.remove('mobile-visible');
+                }
+            }
+        });
+        
+        // Dark mode toggle animation
+        const toggleSwitch = document.querySelector('.toggle-switch');
+        
+        toggleSwitch.addEventListener('click', () => {
+            toggleSwitch.classList.toggle('active');
+        });
+
+        // Join button animation
+        const joinBtn = document.querySelector('.join-btn');
+        
+        joinBtn.addEventListener('mouseenter', () => {
+            joinBtn.style.transform = 'translateY(-3px)';
+            joinBtn.style.boxShadow = '0 10px 25px rgba(108, 99, 255, 0.5)';
+        });
+        
+        joinBtn.addEventListener('mouseleave', () => {
+            joinBtn.style.transform = 'translateY(0)';
+            joinBtn.style.boxShadow = '0 6px 20px rgba(108, 99, 255, 0.4)';
+        });
+    </script>
+</body>
+</html>

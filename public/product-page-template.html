@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ProductDash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0D0D0D;
+            --bg-card: #1A1A1A;
+            --bg-input: #111111;
+            --primary: #9B5CF6;
+            --primary-light: #B794F4;
+            --accent: #00C2FF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .checkout-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background-color: var(--bg-card);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cart-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(155, 92, 246, 0.4);
+        }
+
+        /* Main Content Styles */
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+        }
+
+        /* Product Summary Styles */
+        .checkout-section {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .product-card {
+            padding: 16px 0;
+        }
+
+        .product-header {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .product-image {
+            width: 120px;
+            height: 120px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 20px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        /* Deskripsi produk singkat */
+        .product-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        /* Deskripsi produk yang luas dan dapat digeser */
+        .product-full-desc {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .desc-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .desc-content {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+            background-color: var(--bg-input);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Scrollbar styling */
+        .desc-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .desc-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .desc-content::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .desc-content::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+
+        .product-package {
+            margin-bottom: 12px;
+        }
+
+        .package-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .package-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .package-option {
+            background-color: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .package-option:hover {
+            border-color: var(--primary);
+        }
+
+        .package-option.selected {
+            background-color: rgba(155, 92, 246, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .product-prices {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .new-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .discount-badge {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .in-stock {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .low-stock {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .out-of-stock {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .quantity-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-primary);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .quantity-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .quantity-display {
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .product-total {
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        /* Shipping Information Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(155, 92, 246, 0.2);
+        }
+
+        /* Textarea styling */
+        .form-textarea {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(155, 92, 246, 0.2);
+        }
+
+        /* Add to Cart Button */
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #10B981, #00C2FF);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: var(--border-radius-lg);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            flex: 1;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Payment Method Styles */
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(155, 92, 246, 0.1);
+        }
+
+        .payment-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .payment-option.selected .payment-radio {
+            border-color: var(--primary);
+        }
+
+        .payment-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .payment-option.selected .payment-radio::after {
+            opacity: 1;
+        }
+
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .payment-details {
+            flex-grow: 1;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .payment-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Order Summary Styles */
+        .order-summary {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+        }
+
+        .summary-value {
+            font-weight: 500;
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            margin: 20px 0;
+            opacity: 0.3;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+
+        .total-label {
+            color: var(--text-primary);
+        }
+
+        .total-value {
+            color: var(--primary);
+        }
+
+        /* Container tombol di ringkasan pembayaran */
+        .button-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Action Button Styles */
+        .pay-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: var(--border-radius-lg);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(155, 92, 246, 0.3);
+            flex: 1;
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(155, 92, 246, 0.4);
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .checkout-header {
+                padding: 16px;
+            }
+            
+            .checkout-container {
+                padding: 16px;
+            }
+            
+            .checkout-section {
+                padding: 20px;
+            }
+            
+            /* MODIFIKASI: Pada mobile, gambar produk full width di atas */
+            .product-header {
+                flex-direction: column;
+            }
+            
+            .product-image {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1 / 1;
+                margin-bottom: 16px;
+                align-self: center;
+            }
+            
+            .product-image i {
+                font-size: 48px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-left {
+                gap: 8px;
+            }
+            
+            .logo h1 {
+                font-size: 18px;
+            }
+            
+            .checkout-section {
+                padding: 16px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            /* PERBAIKAN: Tombol tetap sejajar pada mobile */
+            .button-container {
+                flex-direction: row;
+            }
+            
+            /* Penyesuaian untuk tombol pada layar kecil */
+            .add-to-cart-btn, .pay-btn {
+                padding: 14px 12px;
+                font-size: 15px;
+            }
+        }
+
+        /* Responsive tambahan untuk layar sangat kecil */
+        @media (max-width: 360px) {
+            .button-container {
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .add-to-cart-btn, .pay-btn {
+                padding: 12px 8px;
+                font-size: 14px;
+            }
+            
+            .add-to-cart-btn i, .pay-btn i {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <h1>ProductDash</h1>
+            </div>
+        </div>
+        <div class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="checkout-container">
+        <!-- Left Column: Product Summary, Shipping, Payment -->
+        <div class="checkout-main">
+            <!-- Product Summary -->
+            <section class="checkout-section">
+                <h2 class="section-title">
+                    <i class="fas fa-shopping-bag"></i>
+                    Ringkasan Produk
+                </h2>
+                
+                <div class="product-card">
+                    <!-- Header produk dengan gambar dan nama -->
+                    <div class="product-header">
+                        <div class="product-image">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div>
+                            <div class="product-name">Wireless Headphones Premium Edition</div>
+                            <!-- Deskripsi produk singkat -->
+                            <div class="product-desc">
+                                Headphone nirkabel dengan kualitas suara premium, baterai tahan lama, dan koneksi Bluetooth 5.0.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Konten utama produk -->
+                    <div>
+                        <!-- Deskripsi produk lengkap yang dapat digeser -->
+                        <div class="product-full-desc">
+                            <div class="desc-label">Deskripsi Lengkap:</div>
+                            <div class="desc-content">
+                                <p>Wireless Headphones Premium Edition hadir dengan teknologi audio mutakhir yang memberikan pengalaman mendengarkan yang luar biasa. Dibekali dengan driver berdaya tinggi 40mm, headphone ini menghasilkan suara yang jernih, bass yang dalam, dan detail yang tajam di seluruh rentang frekuensi.</p>
+                                
+                                <p><strong>Fitur Utama:</strong></p>
+                                <ul>
+                                    <li>Bluetooth 5.0 dengan jangkauan hingga 15 meter</li>
+                                    <li>Baterai tahan hingga 30 jam pemakaian</li>
+                                    <li>Fast charging - 15 menit untuk 5 jam pemakaian</li>
+                                    <li>Active Noise Cancellation (ANC) untuk pengalaman mendengarkan yang imersif</li>
+                                    <li>Koneksi kabel 3.5mm sebagai opsi cadangan</li>
+                                    <li>Desain ear cup yang nyaman untuk pemakaian lama</li>
+                                    <li>Kontrol sentuh untuk mengatur volume dan panggilan</li>
+                                    <li>Asisten suara terintegrasi (Google Assistant & Siri)</li>
+                                </ul>
+                                
+                                <p><strong>Spesifikasi Teknis:</strong></p>
+                                <ul>
+                                    <li>Impedansi: 32 ohm</li>
+                                    <li>Frekuensi respons: 20Hz - 20kHz</li>
+                                    <li>Sensitivitas: 100dB ± 3dB</li>
+                                    <li>Berat: 265g</li>
+                                    <li>Bahan: Plastik ABS dengan bantalan kulit sintetis</li>
+                                </ul>
+                                
+                                <p>Dilengkapi dengan case pelindung premium untuk penyimpanan dan perjalanan. Garansi resmi 2 tahun dengan dukungan pelanggan 24/7.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="product-package">
+                            <!-- MODIFIKASI: Mengubah label "Pilih Paket" menjadi "Pilih Varian" -->
+                            <div class="package-label">Pilih Varian:</div>
+                            <div class="package-options">
+                                <div class="package-option" data-package="basic" onclick="selectPackage('basic')">Basic</div>
+                                <div class="package-option selected" data-package="premium" onclick="selectPackage('premium')">Premium</div>
+                                <div class="package-option" data-package="pro" onclick="selectPackage('pro')">Pro</div>
+                            </div>
+                        </div>
+                        
+                        <div class="product-prices">
+                            <span class="old-price">Rp 1.499.000</span>
+                            <span class="new-price" id="product-price">Rp 1.299.000</span>
+                            <span class="discount-badge" id="product-discount">15%</span>
+                        </div>
+                        
+                        <div class="stock-badge in-stock">In Stock ✅</div>
+                        
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(-1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="quantity-display" id="product-qty">1</span>
+                            <button class="quantity-btn" onclick="updateQuantity(1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="product-total" id="product-total">Total: Rp 1.299.000</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Buyer Information -->
+            <section class="checkout-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i>
+                    Data Pembeli
+                </h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="fullname">Nama Lengkap</label>
+                    <input type="text" id="fullname" class="form-input" placeholder="Masukkan nama lengkap">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="phone">Nomor WhatsApp</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="Contoh: 08123456789">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="city">Kota / Provinsi</label>
+                    <input type="text" id="city" class="form-input" placeholder="Masukkan kota dan provinsi">
+                </div>
+
+                <!-- MODIFIKASI: Menambahkan kolom pesan opsional -->
+                <div class="form-group">
+                    <label class="form-label" for="message">Pesan Opsional</label>
+                    <textarea id="message" class="form-textarea" placeholder="Masukkan pesan atau catatan tambahan (opsional)"></textarea>
+                </div>
+            </section>
+
+            <!-- Payment Method -->
+            <section class="checkout-section">
+                <h2 class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    Metode Pembayaran
+                </h2>
+                
+                <div class="payment-options">
+                    <div class="payment-option" onclick="selectPayment('qris')">
+                        <div class="payment-radio"></div>
+                        <div class="payment-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="payment-details">
+                            <div class="payment-name">QRIS</div>
+                            <div class="payment-desc">Scan QR code untuk pembayaran</div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-option" onclick="selectPayment('dana')">
+                        <div class="payment-radio"></div>
+                        <div class="payment-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="payment-details">
+                            <div class="payment-name">E-Wallet (DANA)</div>
+                            <div class="payment-desc">Transfer via DANA</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Column: Order Summary -->
+        <div class="checkout-sidebar">
+            <div class="order-summary">
+                <h2 class="section-title">
+                    <i class="fas fa-receipt"></i>
+                    Ringkasan Pembayaran
+                </h2>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal</span>
+                    <span class="summary-value" id="subtotal">Rp 1.299.000</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Diskon</span>
+                    <span class="summary-value" id="discount">-Rp 194.850</span>
+                </div>
+                
+                <div class="summary-divider"></div>
+                
+                <div class="total-row">
+                    <span class="total-label">Total Bayar</span>
+                    <span class="total-value" id="total">Rp 1.104.150</span>
+                </div>
+                
+                <!-- Container tombol baru -->
+                <div class="button-container">
+                    <button class="add-to-cart-btn" onclick="addToCart()">
+                        <i class="fas fa-cart-plus"></i>
+                        Keranjang
+                    </button>
+                    <button class="pay-btn" onclick="processPayment()">
+                        <i class="fab fa-whatsapp"></i>
+                        Bayar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="notification-text">Pesanan berhasil dikirim via WhatsApp!</div>
+    </div>
+
+    <script>
+        // Data produk
+        const products = {
+            basic: {
+                name: "Wireless Headphones Basic Edition",
+                price: 999000,
+                discount: 0.10
+            },
+            premium: {
+                name: "Wireless Headphones Premium Edition",
+                price: 1299000,
+                discount: 0.15
+            },
+            pro: {
+                name: "Wireless Headphones Pro Edition",
+                price: 1799000,
+                discount: 0.20
+            }
+        };
+
+        let selectedPackage = 'premium';
+        let quantity = 1;
+        let selectedPayment = 'qris';
+
+        // Pilih paket produk
+        function selectPackage(packageId) {
+            selectedPackage = packageId;
+            
+            // Update UI
+            document.querySelectorAll('.package-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`.package-option[data-package="${packageId}"]`).classList.add('selected');
+            
+            // Update harga dan nama produk
+            updateProductDetails();
+            updateOrderSummary();
+        }
+
+        // Update quantity produk
+        function updateQuantity(change) {
+            quantity += change;
+            
+            // Pastikan quantity tidak kurang dari 1
+            if (quantity < 1) {
+                quantity = 1;
+            }
+            
+            // Update tampilan
+            document.getElementById('product-qty').textContent = quantity;
+            updateProductDetails();
+            updateOrderSummary();
+        }
+
+        // Update detail produk
+        function updateProductDetails() {
+            const product = products[selectedPackage];
+            const oldPrice = Math.round(product.price / (1 - product.discount));
+            const discountAmount = Math.round(product.price * product.discount);
+            const total = product.price * quantity;
+            
+            // Update tampilan
+            document.getElementById('product-price').textContent = `Rp ${formatCurrency(product.price)}`;
+            document.querySelector('.old-price').textContent = `Rp ${formatCurrency(oldPrice)}`;
+            document.getElementById('product-discount').textContent = `${Math.round(product.discount * 100)}%`;
+            document.getElementById('product-total').textContent = `Total: Rp ${formatCurrency(total)}`;
+        }
+
+        // Pilih metode pembayaran
+        function selectPayment(method) {
+            selectedPayment = method;
+            
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            if (method === 'qris') {
+                document.querySelector('.payment-option:nth-child(1)').classList.add('selected');
+            } else if (method === 'dana') {
+                document.querySelector('.payment-option:nth-child(2)').classList.add('selected');
+            }
+        }
+
+        // Update ringkasan pesanan
+        function updateOrderSummary() {
+            const product = products[selectedPackage];
+            const subtotal = product.price * quantity;
+            const discountAmount = Math.round(subtotal * product.discount);
+            const total = subtotal - discountAmount;
+            
+            // Update tampilan
+            document.getElementById('subtotal').textContent = `Rp ${formatCurrency(subtotal)}`;
+            document.getElementById('discount').textContent = `-Rp ${formatCurrency(discountAmount)}`;
+            document.getElementById('total').textContent = `Rp ${formatCurrency(total)}`;
+        }
+
+        // Format mata uang
+        function formatCurrency(amount) {
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Fungsi untuk menambahkan produk ke keranjang
+        function addToCart() {
+            const product = products[selectedPackage];
+            const subtotal = product.price * quantity;
+            const discountAmount = Math.round(subtotal * product.discount);
+            const total = subtotal - discountAmount;
+
+            const item = {
+                name: product.name,
+                package: selectedPackage,
+                qty: quantity,
+                price: product.price,
+                discount: product.discount,
+                total: total
+            };
+
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existing = cart.find(p => p.name === item.name && p.package === item.package);
+            if (existing) {
+                existing.qty += item.qty;
+                existing.total += item.total;
+            } else {
+                cart.push(item);
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            const notification = document.getElementById('notification');
+            notification.querySelector('.notification-text').textContent = "Produk berhasil dimasukkan ke keranjang!";
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Proses pembayaran
+        function processPayment() {
+            // Validasi form
+            const fullname = document.getElementById('fullname').value;
+            const phone = document.getElementById('phone').value;
+            const city = document.getElementById('city').value;
+            const message = document.getElementById('message').value; // MODIFIKASI: Ambil nilai pesan opsional
+            
+            if (!fullname || !phone || !city) {
+                alert('Harap lengkapi semua data pembeli!');
+                return;
+            }
+            
+            // Buat pesan WhatsApp
+            const product = products[selectedPackage];
+            const subtotal = product.price * quantity;
+            const discountAmount = Math.round(subtotal * product.discount);
+            const total = subtotal - discountAmount;
+            
+            const paymentMethod = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
+            
+            // MODIFIKASI: Tambahkan pesan opsional ke template pesan WhatsApp jika ada
+            let messageTemplate = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0AProduk: ${product.name}%0ATotal: Rp ${formatCurrency(total)}%0AMetode Pembayaran: ${paymentMethod}%0A%0ANama: ${fullname}%0ANomor WhatsApp: ${phone}%0AKota: ${city}`;
+            
+            if (message) {
+                messageTemplate += `%0APesan: ${message}`;
+            }
+            
+            const whatsappUrl = `https://wa.me/6281234567890?text=${messageTemplate}`;
+            
+            // Buka WhatsApp
+            window.open(whatsappUrl, '_blank');
+            
+            // Tampilkan notifikasi
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            // Sembunyikan notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Inisialisasi halaman
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProductDetails();
+            updateOrderSummary();
+            selectPayment('qris');
+        });
+    </script>
+</body>
+</html>

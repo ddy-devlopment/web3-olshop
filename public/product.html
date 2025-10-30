@@ -713,6 +713,62 @@
             transition: all 0.3s ease;
         }
 
+        /* Loading State */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(79, 70, 229, 0.2);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .error-state i {
+            font-size: 48px;
+            color: var(--danger);
+            margin-bottom: 16px;
+        }
+
+        .retry-btn {
+            margin-top: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .retry-btn:hover {
+            background-color: var(--primary-light);
+        }
+
         /* About Section */
         .about-section {
             background-color: var(--bg-card);
@@ -1098,9 +1154,9 @@
                 <div class="header-actions">
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Cari produk...">
+                        <input type="text" id="searchInput" placeholder="Cari produk...">
                     </div>
-                    <button class="btn">
+                    <button class="btn" id="filterBtn">
                         <i class="fas fa-filter"></i>
                         Filter
                     </button>
@@ -1169,172 +1225,29 @@
             <div class="products-section">
                 <div class="section-header">
                     <div class="section-title">Product Catalog</div>
-                    <button class="btn">
+                    <button class="btn" id="refreshBtn">
                         <i class="fas fa-sync-alt"></i>
                         Refresh
                     </button>
                 </div>
                 
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Memuat produk...</p>
+                </div>
+                
+                <!-- Error State -->
+                <div class="error-state" id="errorState" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Gagal memuat produk</h3>
+                    <p>Terjadi kesalahan saat mengambil data produk. Silakan coba lagi.</p>
+                    <button class="retry-btn" id="retryBtn">Coba Lagi</button>
+                </div>
+                
+                <!-- Products Grid -->
                 <div class="products-grid" id="productsGrid">
-                    <!-- Product Card 1 -->
-                    <a href="detail-produk.html" class="product-card" data-category="elektronik">
-                        <div class="product-image">
-                            <i class="fas fa-headphones"></i>
-                            <div class="product-badge in-stock">In Stock</div>
-                            <div class="discount-badge">-25%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Wireless Headphones Premium Edition</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="sold-count">Terjual 1.2k</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 1.499.000</span>
-                                <span class="new-price">Rp 1.299.000</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 2 -->
-                    <a href="detail-produk.html" class="product-card" data-category="fashion">
-                        <div class="product-image">
-                            <i class="fas fa-tshirt"></i>
-                            <div class="product-badge low-stock">Low Stock</div>
-                            <div class="discount-badge">-15%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Cotton T-Shirt Premium Quality</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="sold-count">Terjual 850</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 299.000</span>
-                                <span class="new-price">Rp 249.900</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 3 -->
-                    <a href="detail-produk.html" class="product-card" data-category="buku">
-                        <div class="product-image">
-                            <i class="fas fa-book"></i>
-                            <div class="product-badge out-of-stock">Out of Stock</div>
-                            <div class="discount-badge">-20%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Product Design Guide 2023 Edition</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="sold-count">Terjual 520</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 499.000</span>
-                                <span class="new-price">Rp 399.000</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 4 -->
-                    <a href="detail-produk.html" class="product-card" data-category="aksesoris">
-                        <div class="product-image">
-                            <i class="fas fa-mobile-alt"></i>
-                            <div class="product-badge in-stock">In Stock</div>
-                            <div class="discount-badge">-30%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Smartphone Case Premium Protection</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="sold-count">Terjual 3.5k</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 299.000</span>
-                                <span class="new-price">Rp 199.000</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 5 -->
-                    <a href="detail-produk.html" class="product-card" data-category="elektronik">
-                        <div class="product-image">
-                            <i class="fas fa-laptop"></i>
-                            <div class="product-badge in-stock">In Stock</div>
-                            <div class="discount-badge">-10%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Gaming Laptop Pro Series</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="sold-count">Terjual 120</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 21.999.000</span>
-                                <span class="new-price">Rp 18.999.000</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 6 -->
-                    <a href="detail-produk.html" class="product-card" data-category="fashion">
-                        <div class="product-image">
-                            <i class="fas fa-shoe-prints"></i>
-                            <div class="product-badge low-stock">Low Stock</div>
-                            <div class="discount-badge">-35%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Running Shoes Performance Edition</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="sold-count">Terjual 980</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 1.399.000</span>
-                                <span class="new-price">Rp 899.000</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 7 -->
-                    <a href="detail-produk.html" class="product-card" data-category="elektronik">
-                        <div class="product-image">
-                            <i class="fas fa-watch"></i>
-                            <div class="product-badge in-stock">In Stock</div>
-                            <div class="discount-badge">-40%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Smart Watch Fitness Tracker</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="sold-count">Terjual 2.3k</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 2.499.000</span>
-                                <span class="new-price">Rp 1.499.000</span>
-                            </div>
-                        </div>
-                    </a>
-                    
-                    <!-- Product Card 8 -->
-                    <a href="detail-produk.html" class="product-card" data-category="aksesoris">
-                        <div class="product-image">
-                            <i class="fas fa-camera"></i>
-                            <div class="product-badge out-of-stock">Out of Stock</div>
-                            <div class="discount-badge">-25%</div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">Professional Camera DSLR</div>
-                            <div class="product-rating">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="sold-count">Terjual 85</span>
-                            </div>
-                            <div class="product-prices">
-                                <span class="old-price">Rp 16.999.000</span>
-                                <span class="new-price">Rp 12.499.000</span>
-                            </div>
-                        </div>
-                    </a>
+                    <!-- Produk akan ditampilkan di sini secara dinamis -->
                 </div>
             </div>
             
@@ -1368,6 +1281,24 @@
     </div>
 
     <script>
+        // API Configuration
+        const API_BASE_URL = 'https://your-vercel-app.vercel.app/api'; // Ganti dengan URL API Vercel Anda
+        
+        // State management
+        let allProducts = [];
+        let filteredProducts = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // DOM Elements
+        const productsGrid = document.getElementById('productsGrid');
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const searchInput = document.getElementById('searchInput');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+
         // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
@@ -1476,40 +1407,253 @@
             }
         });
 
-        // Filter kategori produk
-        const categoryButtons = document.querySelectorAll('.category-btn');
-        const productCards = document.querySelectorAll('.product-card');
-        
+        // Fetch products from API
+        async function fetchProducts() {
+            try {
+                showLoading();
+                
+                const response = await fetch(`${API_BASE_URL}/products`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const products = await response.json();
+                allProducts = products;
+                
+                // Apply initial filters
+                applyFilters();
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                showError();
+            }
+        }
+
+        // Show loading state
+        function showLoading() {
+            loadingState.style.display = 'flex';
+            errorState.style.display = 'none';
+            productsGrid.style.display = 'none';
+        }
+
+        // Hide loading state
+        function hideLoading() {
+            loadingState.style.display = 'none';
+            errorState.style.display = 'none';
+            productsGrid.style.display = 'grid';
+        }
+
+        // Show error state
+        function showError() {
+            loadingState.style.display = 'none';
+            errorState.style.display = 'flex';
+            productsGrid.style.display = 'none';
+        }
+
+        // Format currency to Indonesian Rupiah
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Calculate discount percentage
+        function calculateDiscountPercentage(originalPrice, discountPrice) {
+            if (originalPrice <= discountPrice || originalPrice === 0) {
+                return 0;
+            }
+            
+            return Math.floor(((originalPrice - discountPrice) / originalPrice) * 100);
+        }
+
+        // Generate star rating HTML
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            let starsHTML = '';
+            
+            // Add full stars
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i class="fas fa-star"></i>';
+            }
+            
+            // Add half star if needed
+            if (hasHalfStar) {
+                starsHTML += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            // Add empty stars
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                starsHTML += '<i class="far fa-star"></i>';
+            }
+            
+            return starsHTML;
+        }
+
+        // Format sold count
+        function formatSoldCount(count) {
+            if (count >= 1000) {
+                return `Terjual ${(count / 1000).toFixed(1)}k`;
+            }
+            return `Terjual ${count}`;
+        }
+
+        // Render products to the grid
+        function renderProducts(products) {
+            productsGrid.innerHTML = '';
+            
+            if (products.length === 0) {
+                productsGrid.innerHTML = `
+                    <div class="error-state" style="display: flex; grid-column: 1 / -1;">
+                        <i class="fas fa-search"></i>
+                        <h3>Tidak ada produk ditemukan</h3>
+                        <p>Coba ubah filter atau kata kunci pencarian.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            products.forEach(product => {
+                // Use first variant for pricing
+                const firstVariant = product.varian && product.varian.length > 0 ? product.varian[0] : null;
+                
+                if (!firstVariant) {
+                    console.warn('Product has no variants:', product);
+                    return;
+                }
+                
+                const originalPrice = firstVariant.harga_asli;
+                const discountPrice = firstVariant.harga_diskon;
+                const discountPercentage = calculateDiscountPercentage(originalPrice, discountPrice);
+                
+                // Create product card
+                const productCard = document.createElement('a');
+                productCard.href = `product-page-template.html?id=${product.id}`;
+                productCard.className = 'product-card';
+                productCard.setAttribute('data-category', product.kategori || 'all');
+                
+                // Product image
+                const productImage = product.gambar 
+                    ? `<img src="${product.gambar}" alt="${product.nama}">`
+                    : `<i class="fas fa-box"></i>`;
+                
+                // Stock badge
+                let stockBadge = '';
+                if (product.stok === 'in-stock') {
+                    stockBadge = '<div class="product-badge in-stock">In Stock</div>';
+                } else if (product.stok === 'low-stock') {
+                    stockBadge = '<div class="product-badge low-stock">Low Stock</div>';
+                } else if (product.stok === 'out-of-stock') {
+                    stockBadge = '<div class="product-badge out-of-stock">Out of Stock</div>';
+                }
+                
+                // Discount badge (only show if there's a discount)
+                const discountBadge = discountPercentage > 0 
+                    ? `<div class="discount-badge">-${discountPercentage}%</div>`
+                    : '';
+                
+                // Star rating
+                const starRating = generateStarRating(product.rating || 0);
+                
+                // Sold count
+                const soldCount = formatSoldCount(product.terjual || 0);
+                
+                // Prices
+                const oldPrice = discountPercentage > 0 
+                    ? `<span class="old-price">${formatRupiah(originalPrice)}</span>`
+                    : '';
+                
+                const newPrice = `<span class="new-price">${formatRupiah(discountPrice)}</span>`;
+                
+                // Build product card HTML
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        ${productImage}
+                        ${stockBadge}
+                        ${discountBadge}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.nama}</div>
+                        <div class="product-rating">
+                            <span class="rating-stars">${starRating}</span>
+                            <span class="sold-count">${soldCount}</span>
+                        </div>
+                        <div class="product-prices">
+                            ${oldPrice}
+                            ${newPrice}
+                        </div>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        // Apply filters based on current category and search query
+        function applyFilters() {
+            filteredProducts = [...allProducts];
+            
+            // Apply category filter
+            if (currentCategory !== 'all') {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.kategori === currentCategory
+                );
+            }
+            
+            // Apply search filter
+            if (searchQuery.trim() !== '') {
+                const query = searchQuery.toLowerCase();
+                filteredProducts = filteredProducts.filter(product => 
+                    product.nama.toLowerCase().includes(query) ||
+                    (product.deskripsi_singkat && product.deskripsi_singkat.toLowerCase().includes(query))
+                );
+            }
+            
+            // Render filtered products
+            renderProducts(filteredProducts);
+        }
+
+        // Event listeners for category filter
         categoryButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Hapus kelas aktif dari semua tombol
+                // Remove active class from all buttons
                 categoryButtons.forEach(btn => btn.classList.remove('active'));
                 
-                // Tambah kelas aktif ke tombol yang diklik
+                // Add active class to clicked button
                 button.classList.add('active');
                 
-                const category = button.getAttribute('data-category');
+                // Update current category
+                currentCategory = button.getAttribute('data-category');
                 
-                // Filter produk
-                productCards.forEach(card => {
-                    if (category === 'all' || card.getAttribute('data-category') === category) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+                // Apply filters
+                applyFilters();
             });
         });
 
-        // Generate diskon acak untuk produk (10% - 40%)
+        // Event listener for search input
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            applyFilters();
+        });
+
+        // Event listener for refresh button
+        refreshBtn.addEventListener('click', () => {
+            fetchProducts();
+        });
+
+        // Event listener for retry button
+        retryBtn.addEventListener('click', () => {
+            fetchProducts();
+        });
+
+        // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
-            const discountBadges = document.querySelectorAll('.discount-badge');
-            
-            discountBadges.forEach(badge => {
-                const randomDiscount = Math.floor(Math.random() * 6) + 1; // 1-6
-                const discountPercent = randomDiscount * 5 + 10; // 10%, 15%, 20%, 25%, 30%, 35%, 40%
-                badge.textContent = `-${discountPercent}%`;
-            });
+            fetchProducts();
         });
     </script>
 </body>

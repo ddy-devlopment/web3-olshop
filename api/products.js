@@ -134,6 +134,13 @@ function validateProductData(product, isUpdate = false) {
     }
   }
 
+  // Validasi rating - PERBAIKAN: tambahkan validasi rating
+  if (product.rating !== undefined && product.rating !== null) {
+    if (isNaN(product.rating) || product.rating < 1 || product.rating > 5) {
+      errors.push("Rating harus berupa angka antara 1 hingga 5");
+    }
+  }
+
   // Validasi varian
   if (product.varian) {
     if (!Array.isArray(product.varian)) {
@@ -168,7 +175,7 @@ function applyDefaults(product, isNew = false) {
   if (isNew) {
     // Untuk produk baru, set default jika tidak disertakan
     if (product.terjual === undefined) product.terjual = 0;
-    if (product.rating === undefined) product.rating = 5;
+    if (product.rating === undefined) product.rating = 5; // Default rating 5
     if (!product.gambar) product.gambar = "";
     if (!product.stok) product.stok = "in-stock";
   }
@@ -181,10 +188,13 @@ function applyDefaults(product, isNew = false) {
     product.rating = parseFloat(product.rating) || 5;
   }
 
-  // Batasi rating antara 0-5
+  // PERBAIKAN: Batasi rating antara 1-5 (bukan 0-5)
   if (product.rating !== undefined) {
-    if (product.rating < 0) product.rating = 0;
+    if (product.rating < 1) product.rating = 1;
     if (product.rating > 5) product.rating = 5;
+    
+    // Bulatkan rating ke 1 desimal
+    product.rating = Math.round(product.rating * 10) / 10;
   }
 
   // Pastikan varian memiliki harga_diskon default jika tidak disertakan
@@ -192,6 +202,13 @@ function applyDefaults(product, isNew = false) {
     product.varian.forEach(variant => {
       if (variant.harga_diskon === undefined || variant.harga_diskon === null) {
         variant.harga_diskon = variant.harga_asli;
+      }
+      // Pastikan tipe data harga benar
+      if (typeof variant.harga_asli !== "number") {
+        variant.harga_asli = parseFloat(variant.harga_asli) || 0;
+      }
+      if (typeof variant.harga_diskon !== "number") {
+        variant.harga_diskon = parseFloat(variant.harga_diskon) || variant.harga_asli;
       }
     });
   }

@@ -706,9 +706,18 @@
 .product-prices {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: flex-start;
+    gap: 6px;
     margin-top: auto;
-    flex-direction: row-reverse; /* Membalik urutan: diskon di kiri, asli di kanan */
+    flex-direction: row-reverse; /* posisi dibalik: diskon di kiri */
+}
+
+.product-prices span {
+    display: inline-block;
+    max-width: 60px; /* batasi lebar agar tidak tumpah */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* muncul titik-titik jika nominal kepanjangan */
 }
 .old-price {
     margin-left: auto;

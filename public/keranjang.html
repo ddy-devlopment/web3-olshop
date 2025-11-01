@@ -890,7 +890,7 @@
             }
             
             cartItems.forEach((item, index) => {
-                const oldPrice = item.oldPrice || item.price;
+                const oldPrice = item.originalPrice || item.price;
                 const discountAmount = oldPrice - item.price;
                 const discountPercentage = oldPrice > item.price ? Math.round((discountAmount / oldPrice) * 100) : 0;
                 const subtotal = item.price * item.quantity;
@@ -910,7 +910,7 @@
                     </div>
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-package">Paket: ${item.package}</div>
+                        <div class="cart-item-package">Varian: ${item.variant}</div>
                         <div class="cart-item-prices">
                             <span class="new-price">Rp ${formatCurrency(item.price)}</span>
                             ${oldPrice > item.price ? `<span class="old-price">Rp ${formatCurrency(oldPrice)}</span>` : ''}
@@ -933,8 +933,6 @@
                 
                 cartItemsEl.appendChild(cartItemEl);
             });
-            
-            saveCartToLocalStorage();
         }
 
         // Toggle item selection
@@ -944,6 +942,7 @@
             updateCartSummary();
             updateDeleteButtonState();
             updateCheckoutButtonState();
+            saveCartToLocalStorage();
         }
 
         // Update item quantity
@@ -965,6 +964,7 @@
             updateCartSummary();
             updateCartDisplay();
             updateCartCounter();
+            saveCartToLocalStorage();
         }
 
         // Update cart summary
@@ -975,7 +975,7 @@
             cartItems.forEach(item => {
                 if (item.selected) {
                     const itemSubtotal = item.price * item.quantity;
-                    const itemDiscount = ((item.oldPrice || item.price) - item.price) * item.quantity;
+                    const itemDiscount = ((item.originalPrice || item.price) - item.price) * item.quantity;
                     
                     subtotal += itemSubtotal;
                     totalDiscount += itemDiscount;
@@ -1051,6 +1051,7 @@
             updateDeleteButtonState();
             updateCheckoutButtonState();
             updateCartCounter();
+            saveCartToLocalStorage();
             showNotification(`${selectedCount} produk berhasil dihapus dari keranjang!`);
         }
 

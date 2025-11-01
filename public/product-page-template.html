@@ -1245,38 +1245,41 @@
             if (!currentProduct) return;
             
             const variant = currentProduct.varian[selectedVariantIndex];
-            const subtotal = variant.harga_diskon * quantity;
-            const discountAmount = (variant.harga_asli - variant.harga_diskon) * quantity;
-            const total = subtotal - discountAmount;
-
+            
+            // Buat ID unik berdasarkan product ID dan varian
+            const cartItemId = `${currentProduct.id}-${variant.name}`;
+            
             const item = {
-                id: currentProduct.id,
+                id: cartItemId,
+                productId: currentProduct.id,
                 name: currentProduct.nama,
                 variant: variant.name,
-                qty: quantity,
+                quantity: quantity,
                 price: variant.harga_diskon,
                 originalPrice: variant.harga_asli,
+                image: currentProduct.gambar || '',
                 discount: ((variant.harga_asli - variant.harga_diskon) / variant.harga_asli) * 100,
-                total: total
+                total: variant.harga_diskon * quantity
             };
 
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const existing = cart.find(p => p.id === item.id && p.variant === item.variant);
-            if (existing) {
-                existing.qty += item.qty;
-                existing.total += item.total;
+            
+            // Cek apakah produk dengan varian yang sama sudah ada di keranjang
+            const existingItemIndex = cart.findIndex(cartItem => cartItem.id === cartItemId);
+            
+            if (existingItemIndex !== -1) {
+                // Jika sudah ada, update quantity-nya
+                cart[existingItemIndex].quantity += quantity;
+                cart[existingItemIndex].total = cart[existingItemIndex].price * cart[existingItemIndex].quantity;
             } else {
+                // Jika belum ada, tambahkan item baru
                 cart.push(item);
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
 
-            const notification = document.getElementById('notification');
-            notification.querySelector('.notification-text').textContent = "Produk berhasil dimasukkan ke keranjang!";
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            // Tampilkan notifikasi kustom
+            showCustomNotification(`Produk berhasil dimasukkan ke keranjang!`);
 
             // Update cart counter
             updateCartCounter();
@@ -1301,7 +1304,7 @@
             const variant = currentProduct.varian[selectedVariantIndex];
             const subtotal = variant.harga_diskon * quantity;
             const discountAmount = (variant.harga_asli - variant.harga_diskon) * quantity;
-            const total = subtotal - discountAmount;
+            const total = subtotal;
             
             const paymentMethod = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
             
@@ -1330,7 +1333,7 @@
         // Fungsi untuk update counter keranjang
         function updateCartCounter() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             
             const cartCounter = document.getElementById('cartCounter');
             if (cartCounter) {
@@ -1344,8 +1347,8 @@
             window.location.href = 'keranjang.html';
         }
 
-        // Fungsi untuk menampilkan notifikasi
-        function showNotification(message) {
+        // Fungsi untuk menampilkan notifikasi kustom
+        function showCustomNotification(message) {
             // Buat elemen notifikasi jika belum ada
             let notification = document.getElementById('custom-notification');
             if (!notification) {

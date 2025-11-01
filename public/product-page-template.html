@@ -1026,7 +1026,7 @@
         let currentProduct = null;
         let selectedVariantIndex = 0;
         let quantity = 1;
-        let selectedPayment = 'qris';
+        let selectedPayment = localStorage.getItem('selectedPayment') || 'qris';
 
         // Fungsi untuk mengambil parameter ID dari URL
         function getProductIdFromURL() {
@@ -1208,6 +1208,7 @@
         // Pilih metode pembayaran
         function selectPayment(method) {
             selectedPayment = method;
+            localStorage.setItem('selectedPayment', method);
             
             document.querySelectorAll('.payment-option').forEach(option => {
                 option.classList.remove('selected');
@@ -1345,16 +1346,46 @@
             
             const paymentMethod = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
             
-            // Tambahkan pesan opsional ke template pesan WhatsApp jika ada
-            let messageTemplate = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0AProduk: ${currentProduct.nama}%0AVarian: ${variant.name}%0AJumlah: ${quantity}%0ATotal: Rp ${formatCurrency(total)}%0AMetode Pembayaran: ${paymentMethod}%0A%0ANama: ${fullname}%0ANomor WhatsApp: ${phone}%0AKota: ${city}`;
+            // Buat pesan WhatsApp dengan format yang lebih rapi
+            let whatsappMessage = `🛒 *PEMESANAN DARI WEBSITE PRODUCTDASH* 🛒%0A%0A`;
+
+            // Detail produk
+            whatsappMessage += `📦 *DETAIL PRODUK*:%0A`;
+            whatsappMessage += `╔═══════════════════════╗%0A`;
+            whatsappMessage += `║ *${currentProduct.nama}*%0A`;
+            whatsappMessage += `║ ┣━━ Varian: ${variant.name}%0A`;
+            whatsappMessage += `║ ┣━━ Jumlah: ${quantity}x%0A`;
+            whatsappMessage += `║ ┣━━ Harga: Rp ${formatCurrency(variant.harga_diskon)}%0A`;
+            whatsappMessage += `║ ┗━━ Subtotal: Rp ${formatCurrency(total)}%0A`;
+            whatsappMessage += `╚═══════════════════════╝%0A%0A`;
+
+            // Total harga
+            whatsappMessage += `💰 *RINGKASAN PEMBAYARAN*:%0A`;
+            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
+            whatsappMessage += `┃ Total: Rp ${formatCurrency(total)}%0A`;
+            whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
+
+            // Metode Pembayaran
+            whatsappMessage += `💳 *METODE PEMBAYARAN*: ${paymentMethod}%0A%0A`;
+
+            // Data pembeli
+            whatsappMessage += `👤 *INFORMASI PEMBELI*:%0A`;
+            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
+            whatsappMessage += `┃ 📛 Nama: ${fullname}%0A`;
+            whatsappMessage += `┃ 📱 WhatsApp: ${phone}%0A`;
+            whatsappMessage += `┃ 🏠 Kota: ${city}%0A`;
             
-            if (message) {
-                messageTemplate += `%0APesan: ${message}`;
+            if (message && message.trim() !== '') {
+                whatsappMessage += `┃ 💬 Pesan: ${message}%0A`;
             }
             
-            messageTemplate += `%0A%0A_Saya memesan dari website ProductDash_`;
-            
-            const whatsappUrl = `https://wa.me/6287866361260?text=${messageTemplate}`;
+            whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
+
+            // Footer
+            whatsappMessage += `_📦 Pesanan ini dibuat melalui website ProductDash_%0A`;
+            whatsappMessage += `_⏰ Mohon konfirmasi ketersediaan stok terlebih dahulu_`;
+
+            const whatsappUrl = `https://wa.me/6287866361260?text=${whatsappMessage}`;
             
             // Buka WhatsApp
             window.open(whatsappUrl, '_blank');
@@ -1425,6 +1456,9 @@
             // Load data pembeli dari localStorage
             loadBuyerData();
             
+            // Inisialisasi metode pembayaran
+            selectPayment(selectedPayment);
+            
             if (!productId) {
                 showError('ID produk tidak ditemukan di URL.');
                 return;
@@ -1440,9 +1474,6 @@
                 // Tampilkan halaman produk
                 document.getElementById('loading-container').style.display = 'none';
                 document.getElementById('checkout-container').style.display = 'grid';
-                
-                // Inisialisasi pembayaran
-                selectPayment('qris');
             } catch (error) {
                 console.error('Error loading product:', error);
                 showError(error.message || 'Terjadi kesalahan saat memuat produk.');

@@ -207,7 +207,7 @@
             box-shadow: 0 6px 20px rgba(155, 92, 246, 0.4);
         }
 
-        /* Cart Items Styles - Updated for Shopee-like design */
+        /* Cart Items Styles */
         .cart-items-section {
             background-color: var(--bg-card);
             border-radius: var(--border-radius-lg);
@@ -314,7 +314,7 @@
 
         .cart-item-details {
             flex-grow: 1;
-            min-width: 0; /* Untuk mencegah overflow */
+            min-width: 0;
             padding-right: 8px;
         }
 
@@ -629,12 +629,6 @@
         }
 
         /* Responsive Styles */
-        @media (max-width: 992px) {
-            .cart-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
         @media (max-width: 768px) {
             .cart-header {
                 padding: 16px;
@@ -656,42 +650,6 @@
             .cart-item-image {
                 width: 60px;
                 height: 60px;
-                font-size: 16px;
-            }
-            
-            .cart-item-name {
-                font-size: 13px;
-            }
-            
-            .cart-item-package {
-                font-size: 11px;
-            }
-            
-            .new-price {
-                font-size: 13px;
-            }
-            
-            .old-price {
-                font-size: 11px;
-            }
-            
-            .discount-badge {
-                font-size: 9px;
-                padding: 2px 4px;
-            }
-            
-            .quantity-btn {
-                width: 24px;
-                height: 24px;
-            }
-            
-            .quantity-display {
-                min-width: 25px;
-                font-size: 13px;
-            }
-            
-            .item-subtotal {
-                font-size: 13px;
             }
         }
 
@@ -707,31 +665,8 @@
             .cart-items-section, .cart-summary {
                 padding: 12px;
             }
-            
-            .section-title, .summary-title {
-                font-size: 14px;
-            }
-            
-            .modal-actions {
-                flex-direction: column;
-            }
-            
-            .modal-btn {
-                width: 100%;
-            }
-            
-            /* Perbaikan khusus untuk tampilan mobile */
-            .cart-item {
-                padding-left: 16px;
-                padding-right: 8px;
-            }
-            
-            .cart-item-checkbox {
-                margin-top: 6px;
-            }
         }
 
-        /* Animation for cart items */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -894,7 +829,7 @@
             }
         }
 
-        // Render cart items
+        // Render cart items dengan data pembeli yang berbeda
         function renderCartItems() {
             cartItemsEl.innerHTML = '';
             
@@ -967,12 +902,10 @@
         function updateItemQuantity(itemIndex, change) {
             cartItems[itemIndex].quantity += change;
             
-            // Ensure quantity is at least 1
             if (cartItems[itemIndex].quantity < 1) {
                 cartItems[itemIndex].quantity = 1;
             }
             
-            // Jika quantity menjadi 0, hapus item
             if (cartItems[itemIndex].quantity === 0) {
                 cartItems.splice(itemIndex, 1);
                 showNotification('Produk berhasil dihapus dari keranjang!');
@@ -1021,9 +954,9 @@
             checkoutBtn.disabled = !hasSelectedItems;
         }
 
-        // Update cart counter - PERBAIKAN: menghitung jumlah produk, bukan total quantity
+        // Update cart counter
         function updateCartCounter() {
-            const totalItems = cartItems.length; // Menghitung jumlah produk, bukan total quantity
+            const totalItems = cartItems.length;
             
             if (cartCounter) {
                 cartCounter.textContent = totalItems > 99 ? '99+' : totalItems;
@@ -1090,9 +1023,8 @@
             // Already on cart page
         }
 
-        // Go to checkout - DIMODIFIKASI: Tampilkan data pembeli untuk setiap produk
+        // Go to checkout - SETIAP PRODUK DENGAN DATA PEMBELI BERBEDA
         function goToCheckout() {
-            // Hanya produk yang dipilih yang akan di-checkout
             const selectedItems = cartItems.filter(item => item.selected);
             
             if (selectedItems.length === 0) {
@@ -1100,15 +1032,13 @@
                 return;
             }
 
-            // Ambil metode pembayaran dari localStorage (dari product-page-template)
             const selectedPayment = localStorage.getItem('selectedPayment') || 'qris';
             const paymentText = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
 
-            // Buat pesan WhatsApp dengan format yang lebih rapi
             let whatsappMessage = `🛒 *PEMESANAN DARI WEBSITE PRODUCTDASH* 🛒%0A%0A`;
             whatsappMessage += `📋 *JUMLAH PRODUK DIPESAN: ${selectedItems.length} ITEM*%0A%0A`;
 
-            // Detail setiap produk dengan data pembeli masing-masing
+            // SETIAP PRODUK MENAMPILKAN DATA PEMBELINYA MASING-MASING
             selectedItems.forEach((item, index) => {
                 const itemTotal = item.price * item.quantity;
                 const buyerData = item.buyerData || {};
@@ -1149,17 +1079,15 @@
             // Informasi tambahan
             whatsappMessage += `📝 *CATATAN*:%0A`;
             whatsappMessage += `• Setiap produk memiliki data pembeli sendiri%0A`;
-            whatsappMessage += `• Data diambil saat produk dimasukkan ke keranjang%0A%0A`;
+            whatsappMessage += `• Data pembeli sesuai saat produk dimasukkan ke keranjang%0A%0A`;
 
             // Footer
             whatsappMessage += `_📦 Pesanan ini dibuat melalui website ProductDash_%0A`;
             whatsappMessage += `_⏰ Mohon konfirmasi ketersediaan stok terlebih dahulu_`;
 
-            // Jangan encode lagi karena sudah pakai %0A
             const whatsappUrl = `https://wa.me/6287866361260?text=${whatsappMessage}`;
             window.open(whatsappUrl, '_blank');
             
-            // Tampilkan notifikasi
             showNotification('Pesanan berhasil dikirim via WhatsApp!');
         }
 

@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Styles tetap sama seperti sebelumnya */
         :root {
             --bg-dark: #0D0D0D;
             --bg-card: #1A1A1A;
@@ -207,7 +208,6 @@
             line-height: 1.3;
         }
 
-        /* Deskripsi produk singkat */
         .product-desc {
             color: var(--text-secondary);
             font-size: 14px;
@@ -215,7 +215,6 @@
             line-height: 1.5;
         }
 
-        /* Deskripsi produk yang luas dan dapat digeser */
         .product-full-desc {
             margin-top: 16px;
             margin-bottom: 16px;
@@ -240,7 +239,6 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Scrollbar styling */
         .desc-content::-webkit-scrollbar {
             width: 6px;
         }
@@ -415,7 +413,6 @@
             box-shadow: 0 0 0 2px rgba(155, 92, 246, 0.2);
         }
 
-        /* Textarea styling */
         .form-textarea {
             width: 100%;
             background-color: var(--bg-input);
@@ -742,7 +739,6 @@
                 padding: 20px;
             }
             
-            /* MODIFIKASI: Pada mobile, gambar produk full width di atas */
             .product-header {
                 flex-direction: column;
             }
@@ -777,19 +773,16 @@
                 font-size: 16px;
             }
             
-            /* PERBAIKAN: Tombol tetap sejajar pada mobile */
             .button-container {
                 flex-direction: row;
             }
             
-            /* Penyesuaian untuk tombol pada layar kecil */
             .add-to-cart-btn, .pay-btn {
                 padding: 14px 12px;
                 font-size: 15px;
             }
         }
 
-        /* Responsive tambahan untuk layar sangat kecil */
         @media (max-width: 360px) {
             .button-container {
                 flex-direction: row;
@@ -914,7 +907,6 @@
                     <input type="text" id="city" class="form-input" placeholder="Masukkan kota dan provinsi">
                 </div>
 
-                <!-- MODIFIKASI: Menambahkan kolom pesan opsional -->
                 <div class="form-group">
                     <label class="form-label" for="message">Pesan Opsional</label>
                     <textarea id="message" class="form-textarea" placeholder="Masukkan pesan atau catatan tambahan (opsional)"></textarea>
@@ -1037,11 +1029,7 @@
         // Fungsi untuk mengambil data produk dari API
         async function fetchProduct(productId) {
             try {
-                // Ganti URL_API dengan URL API serverless Anda di Vercel
-                const API_URL = '/api/products'; // URL relatif jika di deploy di domain yang sama
-                // Jika API di deploy di domain berbeda, gunakan URL lengkap:
-                // const API_URL = 'https://your-app.vercel.app/api/products';
-                
+                const API_URL = '/api/products';
                 const response = await fetch(API_URL);
                 if (!response.ok) {
                     throw new Error('Gagal mengambil data produk');
@@ -1063,12 +1051,10 @@
 
         // Fungsi untuk menampilkan produk di halaman
         function renderProduct(product) {
-            // Set informasi produk dasar
             document.getElementById('product-name').textContent = product.nama;
             document.getElementById('product-short-desc').textContent = product.deskripsi_singkat;
             document.getElementById('product-full-desc').innerHTML = product.deskripsi_lengkap;
             
-            // Set gambar produk
             const productImg = document.getElementById('product-img');
             const productIcon = document.getElementById('product-icon');
             
@@ -1081,7 +1067,6 @@
                 productIcon.style.display = 'flex';
             }
             
-            // Set status stok
             const stockBadge = document.getElementById('product-stock');
             stockBadge.className = 'stock-badge';
             
@@ -1105,10 +1090,7 @@
             }
             stockBadge.textContent = stockText;
             
-            // Render varian produk
             renderProductVariants(product.varian);
-            
-            // Update tampilan harga
             updateProductDetails();
             updateOrderSummary();
         }
@@ -1149,13 +1131,11 @@
         function selectVariant(index) {
             selectedVariantIndex = index;
             
-            // Update UI
             document.querySelectorAll('.package-option').forEach(option => {
                 option.classList.remove('selected');
             });
             document.querySelector(`.package-option[data-index="${index}"]`).classList.add('selected');
             
-            // Update harga
             updateProductDetails();
             updateOrderSummary();
         }
@@ -1164,12 +1144,10 @@
         function updateQuantity(change) {
             quantity += change;
             
-            // Pastikan quantity tidak kurang dari 1
             if (quantity < 1) {
                 quantity = 1;
             }
             
-            // Update tampilan
             document.getElementById('product-qty').textContent = quantity;
             updateProductDetails();
             updateOrderSummary();
@@ -1183,15 +1161,12 @@
             const originalPrice = variant.harga_asli;
             const discountedPrice = variant.harga_diskon;
             
-            // Hitung persentase diskon
             const discountPercentage = originalPrice > discountedPrice ? 
                 Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
             
-            // Update tampilan harga
             document.getElementById('product-original-price').textContent = `Rp ${formatCurrency(originalPrice)}`;
             document.getElementById('product-price').textContent = `Rp ${formatCurrency(discountedPrice)}`;
             
-            // Tampilkan badge diskon hanya jika ada diskon
             const discountBadge = document.getElementById('product-discount');
             if (discountPercentage > 0) {
                 discountBadge.textContent = `${discountPercentage}%`;
@@ -1200,7 +1175,6 @@
                 discountBadge.style.display = 'none';
             }
             
-            // Update total
             const total = discountedPrice * quantity;
             document.getElementById('product-total').textContent = `Total: Rp ${formatCurrency(total)}`;
         }
@@ -1230,7 +1204,6 @@
             const discountAmount = (variant.harga_asli - variant.harga_diskon) * quantity;
             const total = subtotal;
             
-            // Update tampilan
             document.getElementById('subtotal').textContent = `Rp ${formatCurrency(subtotal)}`;
             document.getElementById('discount').textContent = `-Rp ${formatCurrency(discountAmount)}`;
             document.getElementById('total').textContent = `Rp ${formatCurrency(total)}`;
@@ -1241,10 +1214,10 @@
             return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
-        // Fungsi untuk update counter keranjang - PERBAIKAN: menghitung jumlah produk, bukan total quantity
+        // Fungsi untuk update counter keranjang
         function updateCartCounter() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.length; // Menghitung jumlah produk, bukan total quantity
+            const totalItems = cart.length;
             
             const cartCounter = document.getElementById('cartCounter');
             if (cartCounter) {
@@ -1259,11 +1232,13 @@
                 fullname: document.getElementById('fullname').value,
                 phone: document.getElementById('phone').value,
                 city: document.getElementById('city').value,
-                message: document.getElementById('message').value
+                message: document.getElementById('message').value,
+                // Tambahkan timestamp untuk identifikasi unik
+                timestamp: new Date().toISOString()
             };
         }
 
-        // Fungsi untuk menyimpan data pembeli ke localStorage
+        // Fungsi untuk menyimpan data pembeli ke localStorage (hanya untuk form)
         function saveBuyerData() {
             const buyerData = getCurrentBuyerData();
             localStorage.setItem('buyerData', JSON.stringify(buyerData));
@@ -1280,27 +1255,7 @@
             }
         }
 
-        // Fungsi untuk memperbarui data pembeli di semua item keranjang
-        function updateBuyerDataInAllCartItems() {
-            const buyerData = getCurrentBuyerData();
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            // Update data pembeli di setiap item keranjang
-            cart = cart.map(item => ({
-                ...item,
-                buyerData: buyerData
-            }));
-            
-            localStorage.setItem('cart', JSON.stringify(cart));
-            
-            // Jika sedang di halaman keranjang, refresh tampilan
-            if (window.location.pathname.includes('keranjang.html') && typeof renderCartItems === 'function') {
-                cartItems = cart;
-                renderCartItems();
-            }
-        }
-
-        // Fungsi untuk menambahkan produk ke keranjang
+        // Fungsi untuk menambahkan produk ke keranjang dengan data pembeli spesifik
         function addToCart() {
             if (!currentProduct) return;
             
@@ -1309,7 +1264,7 @@
             // Buat ID unik berdasarkan product ID dan varian
             const cartItemId = `${currentProduct.id}-${variant.name}`;
             
-            // Dapatkan data pembeli terkini
+            // Dapatkan data pembeli terkini - SETIAP PRODUK MENYIMPAN DATA PEMBELI SENDIRI
             const buyerData = getCurrentBuyerData();
             
             const item = {
@@ -1323,8 +1278,8 @@
                 image: currentProduct.gambar || '',
                 discount: ((variant.harga_asli - variant.harga_diskon) / variant.harga_asli) * 100,
                 total: variant.harga_diskon * quantity,
-                selected: false, // Default tidak terpilih
-                // SIMPAN DATA PEMBELI DI SETIAP ITEM
+                selected: false,
+                // SETIAP ITEM MENYIMPAN DATA PEMBELI YANG BERBEDA
                 buyerData: buyerData
             };
 
@@ -1334,24 +1289,22 @@
             const existingItemIndex = cart.findIndex(cartItem => cartItem.id === cartItemId);
             
             if (existingItemIndex !== -1) {
-                // Jika sudah ada, update quantity-nya DAN data pembeli
+                // Jika sudah ada, update quantity-nya TAPI JANGAN UPDATE DATA PEMBELI
+                // Biarkan data pembeli tetap sesuai saat pertama kali ditambahkan
                 cart[existingItemIndex].quantity += quantity;
                 cart[existingItemIndex].total = cart[existingItemIndex].price * cart[existingItemIndex].quantity;
-                cart[existingItemIndex].buyerData = buyerData; // Update data pembeli
                 showCustomNotification(`Quantity produk diperbarui di keranjang!`);
             } else {
-                // Jika belum ada, tambahkan item baru
+                // Jika belum ada, tambahkan item baru dengan data pembeli saat ini
                 cart.push(item);
                 showCustomNotification(`Produk berhasil dimasukkan ke keranjang!`);
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
-
-            // Update cart counter
             updateCartCounter();
         }
 
-        // Proses pembayaran
+        // Proses pembayaran langsung dari halaman produk
         function processPayment() {
             if (!currentProduct) return;
             
@@ -1366,7 +1319,7 @@
                 return;
             }
             
-            // Simpan data pembeli
+            // Simpan data pembeli untuk form
             saveBuyerData();
             
             // Buat pesan WhatsApp
@@ -1425,7 +1378,6 @@
             const notification = document.getElementById('notification');
             notification.classList.add('show');
             
-            // Sembunyikan notifikasi setelah 3 detik
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
@@ -1438,7 +1390,6 @@
 
         // Fungsi untuk menampilkan notifikasi kustom
         function showCustomNotification(message) {
-            // Buat elemen notifikasi jika belum ada
             let notification = document.getElementById('custom-notification');
             if (!notification) {
                 notification = document.createElement('div');
@@ -1454,12 +1405,10 @@
                 <span>${message}</span>
             `;
             
-            // Tampilkan notifikasi
             setTimeout(() => {
                 notification.classList.add('show');
             }, 100);
             
-            // Sembunyikan setelah 3 detik
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
@@ -1469,25 +1418,20 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const productId = getProductIdFromURL();
             
-            // Update cart counter
             updateCartCounter();
             
-            // Tambahkan event listener ke tombol tambah ke keranjang
             const addToCartBtn = document.getElementById('addToCartBtn');
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', addToCart);
             }
             
-            // Tambahkan event listener untuk setiap input data pembeli
-            document.getElementById('fullname').addEventListener('input', updateBuyerDataInAllCartItems);
-            document.getElementById('phone').addEventListener('input', updateBuyerDataInAllCartItems);
-            document.getElementById('city').addEventListener('input', updateBuyerDataInAllCartItems);
-            document.getElementById('message').addEventListener('input', updateBuyerDataInAllCartItems);
+            // Hanya menyimpan data pembeli untuk form, tidak mengupdate keranjang
+            document.getElementById('fullname').addEventListener('input', saveBuyerData);
+            document.getElementById('phone').addEventListener('input', saveBuyerData);
+            document.getElementById('city').addEventListener('input', saveBuyerData);
+            document.getElementById('message').addEventListener('input', saveBuyerData);
             
-            // Load data pembeli dari localStorage
             loadBuyerData();
-            
-            // Inisialisasi metode pembayaran
             selectPayment(selectedPayment);
             
             if (!productId) {
@@ -1496,13 +1440,9 @@
             }
             
             try {
-                // Ambil data produk dari API
                 currentProduct = await fetchProduct(productId);
-                
-                // Render produk ke halaman
                 renderProduct(currentProduct);
                 
-                // Tampilkan halaman produk
                 document.getElementById('loading-container').style.display = 'none';
                 document.getElementById('checkout-container').style.display = 'grid';
             } catch (error) {

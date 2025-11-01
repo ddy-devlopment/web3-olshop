@@ -135,6 +135,22 @@
             background-color: transparent;
         }
 
+        .cart-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
         /* Main Content Styles */
         .cart-container {
             max-width: 1200px;
@@ -737,6 +753,10 @@
             <button class="delete-selected-btn" id="deleteSelectedBtn" onclick="showDeleteSelectedModal()" disabled>
                 <i class="fas fa-trash"></i>
             </button>
+            <div class="cart-icon" onclick="goToCart()" style="position: relative;">
+                <i class="fas fa-shopping-cart"></i>
+                <div class="cart-counter" id="cartCounter" style="display: none;">0</div>
+            </div>
         </div>
     </header>
 
@@ -748,7 +768,7 @@
                 <i class="fas fa-shopping-cart"></i>
             </div>
             <h2 class="empty-cart-title">Keranjangmu masih kosong!</h2>
-            <p class="empty-cart-desc">Yuk pilih produk dulu 😊</p>
+            <p class="empty-cart-desc">Tambahkan produk ke keranjang untuk melanjutkan belanja.</p>
             <button class="home-btn" onclick="goToHome()">
                 <i class="fas fa-home"></i>
                 Kembali ke Beranda
@@ -822,39 +842,8 @@
     </div>
 
     <script>
-        // Sample cart data
-        let cartItems = [
-            {
-                id: 1,
-                name: "Wireless Headphones Bluetooth Noise Cancelling Premium",
-                package: "Premium",
-                image: "headphones",
-                price: 12990,
-                discount: 0.15,
-                quantity: 2,
-                selected: false
-            },
-            {
-                id: 2,
-                name: "Smart Watch Fitness Tracker Waterproof",
-                package: "Standard",
-                image: "watch",
-                price: 14990,
-                discount: 0.20,
-                quantity: 1,
-                selected: false
-            },
-            {
-                id: 3,
-                name: "Phone Case Premium Soft Touch",
-                package: "Clear",
-                image: "mobile",
-                price: 4990,
-                discount: 0.10,
-                quantity: 3,
-                selected: false
-            }
-        ];
+        // Data keranjang dari localStorage
+        let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
 
         // DOM Elements
         const emptyCartEl = document.getElementById('emptyCart');
@@ -868,6 +857,7 @@
         const notificationEl = document.getElementById('notification');
         const notificationTextEl = document.getElementById('notificationText');
         const deleteSelectedModalEl = document.getElementById('deleteSelectedModal');
+        const cartCounter = document.getElementById('cartCounter');
 
         // Initialize the cart
         function initCart() {
@@ -875,6 +865,8 @@
             renderCartItems();
             updateCartSummary();
             updateDeleteButtonState();
+            updateCheckoutButtonState();
+            updateCartCounter();
         }
 
         // Update cart display based on items
@@ -892,37 +884,45 @@
         function renderCartItems() {
             cartItemsEl.innerHTML = '';
             
-            cartItems.forEach(item => {
-                const oldPrice = Math.round(item.price / (1 - item.discount));
-                const discountAmount = Math.round(item.price * item.discount);
+            if (cartItems.length === 0) {
+                updateCartDisplay();
+                return;
+            }
+            
+            cartItems.forEach((item, index) => {
+                const oldPrice = item.oldPrice || item.price;
+                const discountAmount = oldPrice - item.price;
+                const discountPercentage = oldPrice > item.price ? Math.round((discountAmount / oldPrice) * 100) : 0;
                 const subtotal = item.price * item.quantity;
                 
                 const cartItemEl = document.createElement('div');
                 cartItemEl.className = `cart-item ${item.selected ? 'selected' : ''}`;
                 cartItemEl.setAttribute('data-id', item.id);
+                cartItemEl.setAttribute('data-index', index);
                 
                 cartItemEl.innerHTML = `
-                    <div class="cart-item-checkbox ${item.selected ? 'selected' : ''}" onclick="toggleSelect(${item.id})">
+                    <div class="cart-item-checkbox ${item.selected ? 'selected' : ''}" onclick="toggleSelect(${index})">
                         <i class="fas fa-check"></i>
                     </div>
                     <div class="cart-item-image">
-                        <i class="fas fa-${item.image}"></i>
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+                        <i class="fas fa-cube" style="${item.image ? 'display: none;' : ''}"></i>
                     </div>
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-package">Paket: ${item.package}</div>
                         <div class="cart-item-prices">
                             <span class="new-price">Rp ${formatCurrency(item.price)}</span>
-                            ${item.discount > 0 ? `<span class="old-price">Rp ${formatCurrency(oldPrice)}</span>` : ''}
-                            ${item.discount > 0 ? `<span class="discount-badge">${Math.round(item.discount * 100)}%</span>` : ''}
+                            ${oldPrice > item.price ? `<span class="old-price">Rp ${formatCurrency(oldPrice)}</span>` : ''}
+                            ${discountPercentage > 0 ? `<span class="discount-badge">${discountPercentage}%</span>` : ''}
                         </div>
                         <div class="cart-item-controls">
                             <div class="quantity-controls">
-                                <button class="quantity-btn" onclick="updateItemQuantity(${item.id}, -1)">
+                                <button class="quantity-btn" onclick="updateItemQuantity(${index}, -1)">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 <span class="quantity-display">${item.quantity}</span>
-                                <button class="quantity-btn" onclick="updateItemQuantity(${item.id}, 1)">
+                                <button class="quantity-btn" onclick="updateItemQuantity(${index}, 1)">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
@@ -933,36 +933,38 @@
                 
                 cartItemsEl.appendChild(cartItemEl);
             });
+            
+            saveCartToLocalStorage();
         }
 
         // Toggle item selection
-        function toggleSelect(itemId) {
-            const itemIndex = cartItems.findIndex(item => item.id === itemId);
-            
-            if (itemIndex !== -1) {
-                cartItems[itemIndex].selected = !cartItems[itemIndex].selected;
-                renderCartItems();
-                updateCartSummary();
-                updateDeleteButtonState();
-                updateCheckoutButtonState();
-            }
+        function toggleSelect(itemIndex) {
+            cartItems[itemIndex].selected = !cartItems[itemIndex].selected;
+            renderCartItems();
+            updateCartSummary();
+            updateDeleteButtonState();
+            updateCheckoutButtonState();
         }
 
         // Update item quantity
-        function updateItemQuantity(itemId, change) {
-            const itemIndex = cartItems.findIndex(item => item.id === itemId);
+        function updateItemQuantity(itemIndex, change) {
+            cartItems[itemIndex].quantity += change;
             
-            if (itemIndex !== -1) {
-                cartItems[itemIndex].quantity += change;
-                
-                // Ensure quantity is at least 1
-                if (cartItems[itemIndex].quantity < 1) {
-                    cartItems[itemIndex].quantity = 1;
-                }
-                
-                renderCartItems();
-                updateCartSummary();
+            // Ensure quantity is at least 1
+            if (cartItems[itemIndex].quantity < 1) {
+                cartItems[itemIndex].quantity = 1;
             }
+            
+            // Jika quantity menjadi 0, hapus item
+            if (cartItems[itemIndex].quantity === 0) {
+                cartItems.splice(itemIndex, 1);
+                showNotification('Produk berhasil dihapus dari keranjang!');
+            }
+            
+            renderCartItems();
+            updateCartSummary();
+            updateCartDisplay();
+            updateCartCounter();
         }
 
         // Update cart summary
@@ -972,8 +974,11 @@
             
             cartItems.forEach(item => {
                 if (item.selected) {
-                    subtotal += item.price * item.quantity;
-                    totalDiscount += (item.price * item.discount) * item.quantity;
+                    const itemSubtotal = item.price * item.quantity;
+                    const itemDiscount = ((item.oldPrice || item.price) - item.price) * item.quantity;
+                    
+                    subtotal += itemSubtotal;
+                    totalDiscount += itemDiscount;
                 }
             });
             
@@ -994,6 +999,16 @@
         function updateCheckoutButtonState() {
             const hasSelectedItems = cartItems.some(item => item.selected);
             checkoutBtn.disabled = !hasSelectedItems;
+        }
+
+        // Update cart counter
+        function updateCartCounter() {
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (cartCounter) {
+                cartCounter.textContent = totalItems > 99 ? '99+' : totalItems;
+                cartCounter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
         }
 
         // Format currency
@@ -1027,6 +1042,7 @@
 
         // Delete selected items
         function deleteSelectedItems() {
+            const selectedCount = cartItems.filter(item => item.selected).length;
             cartItems = cartItems.filter(item => !item.selected);
             hideDeleteSelectedModal();
             renderCartItems();
@@ -1034,7 +1050,13 @@
             updateCartDisplay();
             updateDeleteButtonState();
             updateCheckoutButtonState();
-            showNotification('Produk terpilih berhasil dihapus!');
+            updateCartCounter();
+            showNotification(`${selectedCount} produk berhasil dihapus dari keranjang!`);
+        }
+
+        // Save cart to localStorage
+        function saveCartToLocalStorage() {
+            localStorage.setItem('cart', JSON.stringify(cartItems));
         }
 
         // Go to home
@@ -1042,8 +1064,25 @@
             window.location.href = 'product.html';
         }
 
+        // Go to cart
+        function goToCart() {
+            // Already on cart page
+        }
+
         // Go to checkout
         function goToCheckout() {
+            // Hanya produk yang dipilih yang akan di-checkout
+            const selectedItems = cartItems.filter(item => item.selected);
+            
+            if (selectedItems.length === 0) {
+                showNotification('Pilih minimal 1 produk untuk checkout!');
+                return;
+            }
+            
+            // Simpan data checkout sementara
+            localStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
+            
+            // Redirect ke halaman checkout
             window.location.href = 'formcheckout.html';
         }
 

@@ -447,6 +447,53 @@
             font-size: 14px;
         }
 
+        .payment-method {
+            margin: 16px 0;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .payment-method-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(155, 92, 246, 0.1);
+        }
+
+        .payment-icon {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
         .summary-divider {
             height: 1px;
             background: linear-gradient(90deg, var(--primary), var(--accent));
@@ -805,6 +852,28 @@
                     <span class="summary-label">Diskon</span>
                     <span class="summary-value" id="discount">-Rp 0</span>
                 </div>
+
+                <!-- Metode Pembayaran -->
+                <div class="payment-method">
+                    <div class="payment-method-label">
+                        <i class="fas fa-credit-card"></i>
+                        Metode Pembayaran
+                    </div>
+                    <div class="payment-options">
+                        <div class="payment-option" id="paymentQris" onclick="selectPayment('qris')">
+                            <div class="payment-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div>QRIS</div>
+                        </div>
+                        <div class="payment-option" id="paymentDana" onclick="selectPayment('dana')">
+                            <div class="payment-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div>DANA</div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="summary-divider"></div>
                 
@@ -844,6 +913,7 @@
     <script>
         // Data keranjang dari localStorage
         let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        let selectedPayment = localStorage.getItem('selectedPayment') || 'qris';
 
         // DOM Elements
         const emptyCartEl = document.getElementById('emptyCart');
@@ -867,6 +937,38 @@
             updateDeleteButtonState();
             updateCheckoutButtonState();
             updateCartCounter();
+            loadPaymentMethod();
+        }
+
+        // Load payment method from localStorage
+        function loadPaymentMethod() {
+            const savedPayment = localStorage.getItem('selectedPayment');
+            if (savedPayment) {
+                selectedPayment = savedPayment;
+            }
+            updatePaymentDisplay();
+        }
+
+        // Select payment method
+        function selectPayment(method) {
+            selectedPayment = method;
+            localStorage.setItem('selectedPayment', method);
+            updatePaymentDisplay();
+        }
+
+        // Update payment method display
+        function updatePaymentDisplay() {
+            // Remove selected class from all options
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to current option
+            if (selectedPayment === 'qris') {
+                document.getElementById('paymentQris').classList.add('selected');
+            } else if (selectedPayment === 'dana') {
+                document.getElementById('paymentDana').classList.add('selected');
+            }
         }
 
         // Update cart display based on items
@@ -1089,6 +1191,9 @@
                 return;
             }
 
+            // Tentukan teks metode pembayaran
+            const paymentText = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
+
             // Buat pesan WhatsApp dengan format yang lebih rapi
             let whatsappMessage = `🛒 *PEMESANAN DARI WEBSITE PRODUCTDASH* 🛒%0A%0A`;
 
@@ -1119,6 +1224,9 @@
             whatsappMessage += `┃ Total: Rp ${formatCurrency(totalHarga)}%0A`;
             whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
 
+            // Metode Pembayaran
+            whatsappMessage += `💳 *METODE PEMBAYARAN*: ${paymentText}%0A%0A`;
+
             // Data pembeli
             whatsappMessage += `👤 *INFORMASI PEMBELI*:%0A`;
             whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
@@ -1137,8 +1245,9 @@
             whatsappMessage += `_⏰ Mohon konfirmasi ketersediaan stok terlebih dahulu_`;
 
             // Jangan encode lagi karena sudah pakai %0A
-const whatsappUrl = `https://wa.me/6287866361260?text=${whatsappMessage}`;
-window.open(whatsappUrl, '_blank');
+            const whatsappUrl = `https://wa.me/6287866361260?text=${whatsappMessage}`;
+            window.open(whatsappUrl, '_blank');
+            
             // Tampilkan notifikasi
             showNotification('Pesanan berhasil dikirim via WhatsApp!');
         }

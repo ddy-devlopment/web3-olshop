@@ -1094,7 +1094,7 @@
 
             // Detail produk yang dipilih
             whatsappMessage += `📦 *DETAIL PRODUK*:%0A`;
-            whatsappMessage += `╔═════════════════════╗%0A`;
+            whatsappMessage += `╔═══════════════════════╗%0A`;
             
             selectedItems.forEach((item, index) => {
                 const itemTotal = item.price * item.quantity;
@@ -1106,22 +1106,22 @@
                 
                 // Tambah pemisah antar produk kecuali untuk produk terakhir
                 if (index < selectedItems.length - 1) {
-                    whatsappMessage += `║ ━━━━━━━━━━━━━━━━━━━%0A`;
+                    whatsappMessage += `║ ━━━━━━━━━━━━━━━━━━━━━%0A`;
                 }
             });
             
-            whatsappMessage += `╚═════════════════════╝%0A%0A`;
+            whatsappMessage += `╚═══════════════════════╝%0A%0A`;
 
             // Total harga
             const totalHarga = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             whatsappMessage += `💰 *RINGKASAN PEMBAYARAN*:%0A`;
-            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━┓%0A`;
+            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
             whatsappMessage += `┃ Total: Rp ${formatCurrency(totalHarga)}%0A`;
-            whatsappMessage += `┗━━━━━━━━━━━━━━━━━━┛%0A%0A`;
+            whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
 
             // Data pembeli
             whatsappMessage += `👤 *INFORMASI PEMBELI*:%0A`;
-            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━┓%0A`;
+            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
             whatsappMessage += `┃ 📛 Nama: ${buyerData.fullname}%0A`;
             whatsappMessage += `┃ 📱 WhatsApp: ${buyerData.phone}%0A`;
             whatsappMessage += `┃ 🏠 Kota: ${buyerData.city}%0A`;
@@ -1130,9 +1130,7 @@
                 whatsappMessage += `┃ 💬 Pesan: ${buyerData.message}%0A`;
             }
             
-            whatsappMessage += `┗━━━━━━━━━━━// Jangan encode lagi karena sudah pakai %0A
-const whatsappUrl = `https://wa.me/6287866361260?text=${whatsappMessage}`;
-window.open(whatsappUrl, '_blank');━━━━━━━┛%0A%0A`;
+            whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
 
             // Footer
             whatsappMessage += `_📦 Pesanan ini dibuat melalui website ProductDash_%0A`;

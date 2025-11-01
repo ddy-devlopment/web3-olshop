@@ -38,12 +38,89 @@
             font-family: 'Inter', sans-serif;
         }
 
+        /* --- FOOTER YANG DIPERBAIKI --- */
         body {
             background-color: var(--bg-dark);
             color: var(--text-primary);
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
             transition: all 0.3s ease;
+        }
+
+        .main-content {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 0;
+            margin-left: 260px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+/* Footer */
+.footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 30px 0;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: auto;
+}
+
+.light-mode .footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.footer-store {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.footer-version {
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.footer-contact {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.footer-contact a {
+    color: var(--text-secondary);
+    font-size: 18px;
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.footer-contact a:hover {
+    color: var(--primary-light);
+}
+
+.footer-copyright {
+    font-size: 13px;
+}        
+
+
+        /* Perbaikan khusus mobile */
+        @media (max-width: 768px) {
+            .footer {
+                padding-bottom: env(safe-area-inset-bottom, 20px);
+            }
+
+            .main-content {
+                padding-bottom: 10px;
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            body {
+                overflow-x: hidden;
+            }
         }
 
         /* Sidebar Styles */
@@ -292,16 +369,6 @@
         }
 
         /* Main Content Styles */
-        .main-content {
-            flex-grow: 1;
-            margin-left: 260px;
-            padding: 24px;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
         .content-wrapper {
             flex: 1;
         }
@@ -733,42 +800,42 @@
         }
 
         /* PERUBAHAN: Ganti ikon voucher dengan gambar kupon */
-/* Tata letak ikon voucher baru */
-.price-container {
-    display: flex;
-    align-items: center;
-    gap: 6px;                   /* jarak kecil antara harga dan ikon */
-    position: relative;
-}
+        /* Tata letak ikon voucher baru */
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;                   /* jarak kecil antara harga dan ikon */
+            position: relative;
+        }
 
-/* Ikon voucher bergaya Shopee */
-.voucher-icon {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    background-color: transparent;
-    border-radius: 6px;
-    margin-left: 2px;
-    margin-top: -2px;           /* sedikit naik agar sejajar visual dengan angka */
-    transition: transform 0.25s ease, opacity 0.3s ease;
-    opacity: 0.95;
-    flex-shrink: 0;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); /* efek ringan */
-}
+        /* Ikon voucher bergaya Shopee */
+        .voucher-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            background-color: transparent;
+            border-radius: 6px;
+            margin-left: 2px;
+            margin-top: -2px;           /* sedikit naik agar sejajar visual dengan angka */
+            transition: transform 0.25s ease, opacity 0.3s ease;
+            opacity: 0.95;
+            flex-shrink: 0;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); /* efek ringan */
+        }
 
-/* Efek interaksi */
-.voucher-icon:hover {
-    transform: scale(1.15);
-    opacity: 1;
-}
+        /* Efek interaksi */
+        .voucher-icon:hover {
+            transform: scale(1.15);
+            opacity: 1;
+        }
 
-/* Harga utama tetap menonjol */
-.new-price {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--primary);
-    line-height: 1;
-}
+        /* Harga utama tetap menonjol */
+        .new-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
 
         /* Loading State */
         .loading-state {
@@ -842,52 +909,6 @@
             margin: 0 auto;
             line-height: 1.6;
             color: var(--text-secondary);
-        }
-
-        /* Footer */
-        .footer {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 30px 0;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: auto;
-        }
-
-        .light-mode .footer {
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .footer-store {
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .footer-version {
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .footer-contact {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .footer-contact a {
-            color: var(--text-secondary);
-            font-size: 18px;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-
-        .footer-contact a:hover {
-            color: var(--primary-light);
-        }
-
-        .footer-copyright {
-            font-size: 13px;
         }
 
         /* Mobile Styles */
@@ -1315,7 +1336,7 @@
             </div>
         </div>
         
-        <!-- Footer -->
+        <!-- Footer yang Diperbaiki -->
         <div class="footer">
             <div class="footer-store">Snayders Store v0.01</div>
             <div class="footer-contact">

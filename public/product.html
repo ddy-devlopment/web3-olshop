@@ -686,46 +686,42 @@
             height: 40px;
         }
 
+        /* PERBAIKAN: Gaya rating baru - satu bintang dengan angka */
         .product-rating {
             display: flex;
             align-items: center;
             margin-bottom: 8px;
             font-size: 12px;
             color: var(--text-secondary);
+            gap: 4px; /* Jarak kecil antara bintang dan angka */
         }
 
         .rating-stars {
-            color: #F59E0B;
-            margin-right: 4px;
+            color: #F59E0B; /* Warna emas untuk bintang */
+            font-size: 12px;
+        }
+
+        .rating-value {
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
         .sold-count {
             margin-left: 8px;
         }
 
-.product-prices {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 6px;
-    margin-top: auto;
-    flex-direction: row-reverse; /* posisi dibalik: diskon di kiri */
-}
+        /* PERBAIKAN: Tata letak harga dan voucher yang lebih seimbang */
+        .product-prices {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Ubah dari row-reverse ke flex-start */
+            gap: 6px;
+            margin-top: auto;
+        }
 
-.product-prices span {
-    display: inline-block;
-    max-width: 60px; /* batasi lebar agar tidak tumpah */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* muncul titik-titik jika nominal kepanjangan */
-}
-.old-price {
-    margin-left: auto;
-}
+        /* PERBAIKAN: Menghapus old-price */
         .old-price {
-            text-decoration: line-through;
-            color: var(--text-secondary);
-            font-size: 12px;
+            display: none;
         }
 
         .new-price {
@@ -733,7 +729,46 @@
             font-weight: 700;
             color: var(--primary);
             transition: all 0.3s ease;
+            margin-right: auto; /* Dorong voucher ke kanan secara natural */
         }
+
+        /* PERUBAHAN: Ganti ikon voucher dengan gambar kupon */
+/* Tata letak ikon voucher baru */
+.price-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;                   /* jarak kecil antara harga dan ikon */
+    position: relative;
+}
+
+/* Ikon voucher bergaya Shopee */
+.voucher-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    background-color: transparent;
+    border-radius: 6px;
+    margin-left: 2px;
+    margin-top: -2px;           /* sedikit naik agar sejajar visual dengan angka */
+    transition: transform 0.25s ease, opacity 0.3s ease;
+    opacity: 0.95;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); /* efek ringan */
+}
+
+/* Efek interaksi */
+.voucher-icon:hover {
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+/* Harga utama tetap menonjol */
+.new-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
+}
 
         /* Loading State */
         .loading-state {
@@ -1496,29 +1531,23 @@
             return Math.floor(((originalPrice - discountPrice) / originalPrice) * 100);
         }
 
-        // Generate star rating HTML
+        // PERBAIKAN: Fungsi rating baru - hanya menampilkan satu bintang dengan angka
         function generateStarRating(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-            let starsHTML = '';
-            
-            // Add full stars
-            for (let i = 0; i < fullStars; i++) {
-                starsHTML += '<i class="fas fa-star"></i>';
+            // Format angka rating sesuai kebutuhan
+            let formattedRating;
+            if (Number.isInteger(rating)) {
+                formattedRating = rating.toString(); // Angka bulat tanpa desimal
+            } else {
+                formattedRating = rating.toFixed(1); // Angka desimal dengan 1 digit
             }
             
-            // Add half star if needed
-            if (hasHalfStar) {
-                starsHTML += '<i class="fas fa-star-half-alt"></i>';
-            }
-            
-            // Add empty stars
-            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-            for (let i = 0; i < emptyStars; i++) {
-                starsHTML += '<i class="far fa-star"></i>';
-            }
-            
-            return starsHTML;
+            // Kembalikan HTML untuk satu bintang dengan angka rating
+            return `
+                <span class="rating-stars">
+                    <i class="fas fa-star"></i>
+                </span>
+                <span class="rating-value">${formattedRating}</span>
+            `;
         }
 
         // Format sold count
@@ -1582,18 +1611,21 @@
                     ? `<div class="discount-badge">-${discountPercentage}%</div>`
                     : '';
                 
-                // Star rating
+                // PERBAIKAN: Star rating baru - hanya satu bintang dengan angka
                 const starRating = generateStarRating(product.rating || 0);
                 
                 // Sold count
                 const soldCount = formatSoldCount(product.terjual || 0);
                 
-                // Prices
-                const oldPrice = discountPercentage > 0 
-                    ? `<span class="old-price">${formatRupiah(originalPrice)}</span>`
-                    : '';
-                
-                const newPrice = `<span class="new-price">${formatRupiah(discountPrice)}</span>`;
+                // PERBAIKAN: Tata letak harga dan voucher yang lebih seimbang
+                const hasDiscount = discountPercentage > 0;
+                const voucherIcon = hasDiscount ? `<img src="https://raw.githubusercontent.com/klandestin-s/Cloud_v2/main/tmp/cd242d85.jpg" alt="Voucher Diskon" class="voucher-icon">` : "";
+                const newPrice = `
+                    <div class="price-container">
+                        <span class="new-price">${formatRupiah(discountPrice)}</span>
+                        ${voucherIcon}
+                    </div>
+                `;
                 
                 // Build product card HTML
                 productCard.innerHTML = `
@@ -1605,11 +1637,10 @@
                     <div class="product-info">
                         <div class="product-name">${product.nama}</div>
                         <div class="product-rating">
-                            <span class="rating-stars">${starRating}</span>
+                            ${starRating}
                             <span class="sold-count">${soldCount}</span>
                         </div>
                         <div class="product-prices">
-                            ${oldPrice}
                             ${newPrice}
                         </div>
                     </div>

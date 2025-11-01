@@ -363,6 +363,20 @@
             font-weight: 600;
         }
 
+        /* Indikator data pembeli */
+        .buyer-info-indicator {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .buyer-info-indicator i {
+            font-size: 8px;
+        }
+
         .cart-item-controls {
             display: flex;
             align-items: center;
@@ -916,6 +930,10 @@
                             ${oldPrice > item.price ? `<span class="old-price">Rp ${formatCurrency(oldPrice)}</span>` : ''}
                             ${discountPercentage > 0 ? `<span class="discount-badge">${discountPercentage}%</span>` : ''}
                         </div>
+                        <div class="buyer-info-indicator">
+                            <i class="fas fa-user"></i> 
+                            ${item.buyerData && item.buyerData.fullname ? item.buyerData.fullname : 'Data pembeli belum diisi'}
+                        </div>
                         <div class="cart-item-controls">
                             <div class="quantity-controls">
                                 <button class="quantity-btn" onclick="updateItemQuantity(${index}, -1)">
@@ -1072,7 +1090,7 @@
             // Already on cart page
         }
 
-        // Go to checkout - PERBAIKAN: Format pesan WhatsApp yang lebih rapi dan menarik
+        // Go to checkout - DIMODIFIKASI: Tampilkan data pembeli untuk setiap produk
         function goToCheckout() {
             // Hanya produk yang dipilih yang akan di-checkout
             const selectedItems = cartItems.filter(item => item.selected);
@@ -1082,43 +1100,45 @@
                 return;
             }
 
-            // Ambil data pembeli dari localStorage (yang sudah diisi di product-page-template)
-            const buyerData = JSON.parse(localStorage.getItem('buyerData'));
-            if (!buyerData || !buyerData.fullname || !buyerData.phone || !buyerData.city) {
-                alert('Data pembeli tidak lengkap. Silakan kunjungi halaman produk untuk mengisi data pembeli terlebih dahulu.');
-                return;
-            }
-
             // Ambil metode pembayaran dari localStorage (dari product-page-template)
             const selectedPayment = localStorage.getItem('selectedPayment') || 'qris';
             const paymentText = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
 
             // Buat pesan WhatsApp dengan format yang lebih rapi
             let whatsappMessage = `🛒 *PEMESANAN DARI WEBSITE PRODUCTDASH* 🛒%0A%0A`;
+            whatsappMessage += `📋 *JUMLAH PRODUK DIPESAN: ${selectedItems.length} ITEM*%0A%0A`;
 
-            // Detail produk yang dipilih
-            whatsappMessage += `📦 *DETAIL PRODUK*:%0A`;
-            whatsappMessage += `╔═══════════════════════╗%0A`;
-            
+            // Detail setiap produk dengan data pembeli masing-masing
             selectedItems.forEach((item, index) => {
                 const itemTotal = item.price * item.quantity;
-                whatsappMessage += `║ *${item.name}*%0A`;
+                const buyerData = item.buyerData || {};
+                
+                whatsappMessage += `📦 *PRODUK ${index + 1}: ${item.name}*%0A`;
+                whatsappMessage += `╔═══════════════════════╗%0A`;
+                whatsappMessage += `║ *Detail Produk*%0A`;
+                whatsappMessage += `║ ┣━━ Nama: ${item.name}%0A`;
                 whatsappMessage += `║ ┣━━ Varian: ${item.variant}%0A`;
                 whatsappMessage += `║ ┣━━ Jumlah: ${item.quantity}x%0A`;
                 whatsappMessage += `║ ┣━━ Harga: Rp ${formatCurrency(item.price)}%0A`;
                 whatsappMessage += `║ ┗━━ Subtotal: Rp ${formatCurrency(itemTotal)}%0A`;
+                whatsappMessage += `║%0A`;
+                whatsappMessage += `║ *Data Pembeli*%0A`;
+                whatsappMessage += `║ ┣━━ Nama: ${buyerData.fullname || 'Belum diisi'}%0A`;
+                whatsappMessage += `║ ┣━━ WhatsApp: ${buyerData.phone || 'Belum diisi'}%0A`;
+                whatsappMessage += `║ ┣━━ Kota: ${buyerData.city || 'Belum diisi'}%0A`;
                 
-                // Tambah pemisah antar produk kecuali untuk produk terakhir
-                if (index < selectedItems.length - 1) {
-                    whatsappMessage += `║ ━━━━━━━━━━━━━━━━━━━━━%0A`;
+                if (buyerData.message && buyerData.message.trim() !== '') {
+                    whatsappMessage += `║ ┗━━ Pesan: ${buyerData.message}%0A`;
+                } else {
+                    whatsappMessage += `║ ┗━━ Pesan: -%0A`;
                 }
+                
+                whatsappMessage += `╚═══════════════════════╝%0A%0A`;
             });
-            
-            whatsappMessage += `╚═══════════════════════╝%0A%0A`;
 
-            // Total harga
+            // Total harga semua produk
             const totalHarga = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            whatsappMessage += `💰 *RINGKASAN PEMBAYARAN*:%0A`;
+            whatsappMessage += `💰 *TOTAL SEMUA PRODUK*:%0A`;
             whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
             whatsappMessage += `┃ Total: Rp ${formatCurrency(totalHarga)}%0A`;
             whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
@@ -1126,18 +1146,10 @@
             // Metode Pembayaran
             whatsappMessage += `💳 *METODE PEMBAYARAN*: ${paymentText}%0A%0A`;
 
-            // Data pembeli
-            whatsappMessage += `👤 *INFORMASI PEMBELI*:%0A`;
-            whatsappMessage += `┏━━━━━━━━━━━━━━━━━━━━┓%0A`;
-            whatsappMessage += `┃ 📛 Nama: ${buyerData.fullname}%0A`;
-            whatsappMessage += `┃ 📱 WhatsApp: ${buyerData.phone}%0A`;
-            whatsappMessage += `┃ 🏠 Kota: ${buyerData.city}%0A`;
-            
-            if (buyerData.message && buyerData.message.trim() !== '') {
-                whatsappMessage += `┃ 💬 Pesan: ${buyerData.message}%0A`;
-            }
-            
-            whatsappMessage += `┗━━━━━━━━━━━━━━━━━━━━┛%0A%0A`;
+            // Informasi tambahan
+            whatsappMessage += `📝 *CATATAN*:%0A`;
+            whatsappMessage += `• Setiap produk memiliki data pembeli sendiri%0A`;
+            whatsappMessage += `• Data diambil saat produk dimasukkan ke keranjang%0A%0A`;
 
             // Footer
             whatsappMessage += `_📦 Pesanan ini dibuat melalui website ProductDash_%0A`;

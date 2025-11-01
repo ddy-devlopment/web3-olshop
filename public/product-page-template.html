@@ -1253,14 +1253,19 @@
             }
         }
 
-        // Fungsi untuk menyimpan data pembeli ke localStorage
-        function saveBuyerData() {
-            const buyerData = {
+        // Fungsi untuk mendapatkan data pembeli terkini
+        function getCurrentBuyerData() {
+            return {
                 fullname: document.getElementById('fullname').value,
                 phone: document.getElementById('phone').value,
                 city: document.getElementById('city').value,
                 message: document.getElementById('message').value
             };
+        }
+
+        // Fungsi untuk menyimpan data pembeli ke localStorage
+        function saveBuyerData() {
+            const buyerData = getCurrentBuyerData();
             localStorage.setItem('buyerData', JSON.stringify(buyerData));
         }
 
@@ -1275,6 +1280,26 @@
             }
         }
 
+        // Fungsi untuk memperbarui data pembeli di semua item keranjang
+        function updateBuyerDataInAllCartItems() {
+            const buyerData = getCurrentBuyerData();
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Update data pembeli di setiap item keranjang
+            cart = cart.map(item => ({
+                ...item,
+                buyerData: buyerData
+            }));
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Jika sedang di halaman keranjang, refresh tampilan
+            if (window.location.pathname.includes('keranjang.html') && typeof renderCartItems === 'function') {
+                cartItems = cart;
+                renderCartItems();
+            }
+        }
+
         // Fungsi untuk menambahkan produk ke keranjang
         function addToCart() {
             if (!currentProduct) return;
@@ -1283,6 +1308,9 @@
             
             // Buat ID unik berdasarkan product ID dan varian
             const cartItemId = `${currentProduct.id}-${variant.name}`;
+            
+            // Dapatkan data pembeli terkini
+            const buyerData = getCurrentBuyerData();
             
             const item = {
                 id: cartItemId,
@@ -1295,7 +1323,9 @@
                 image: currentProduct.gambar || '',
                 discount: ((variant.harga_asli - variant.harga_diskon) / variant.harga_asli) * 100,
                 total: variant.harga_diskon * quantity,
-                selected: false // Default tidak terpilih
+                selected: false, // Default tidak terpilih
+                // SIMPAN DATA PEMBELI DI SETIAP ITEM
+                buyerData: buyerData
             };
 
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1304,9 +1334,10 @@
             const existingItemIndex = cart.findIndex(cartItem => cartItem.id === cartItemId);
             
             if (existingItemIndex !== -1) {
-                // Jika sudah ada, update quantity-nya
+                // Jika sudah ada, update quantity-nya DAN data pembeli
                 cart[existingItemIndex].quantity += quantity;
                 cart[existingItemIndex].total = cart[existingItemIndex].price * cart[existingItemIndex].quantity;
+                cart[existingItemIndex].buyerData = buyerData; // Update data pembeli
                 showCustomNotification(`Quantity produk diperbarui di keranjang!`);
             } else {
                 // Jika belum ada, tambahkan item baru
@@ -1448,10 +1479,10 @@
             }
             
             // Tambahkan event listener untuk setiap input data pembeli
-            document.getElementById('fullname').addEventListener('input', saveBuyerData);
-            document.getElementById('phone').addEventListener('input', saveBuyerData);
-            document.getElementById('city').addEventListener('input', saveBuyerData);
-            document.getElementById('message').addEventListener('input', saveBuyerData);
+            document.getElementById('fullname').addEventListener('input', updateBuyerDataInAllCartItems);
+            document.getElementById('phone').addEventListener('input', updateBuyerDataInAllCartItems);
+            document.getElementById('city').addEventListener('input', updateBuyerDataInAllCartItems);
+            document.getElementById('message').addEventListener('input', updateBuyerDataInAllCartItems);
             
             // Load data pembeli dari localStorage
             loadBuyerData();

@@ -1252,6 +1252,28 @@
             }
         }
 
+        // Fungsi untuk menyimpan data pembeli ke localStorage
+        function saveBuyerData() {
+            const buyerData = {
+                fullname: document.getElementById('fullname').value,
+                phone: document.getElementById('phone').value,
+                city: document.getElementById('city').value,
+                message: document.getElementById('message').value
+            };
+            localStorage.setItem('buyerData', JSON.stringify(buyerData));
+        }
+
+        // Fungsi untuk memuat data pembeli dari localStorage
+        function loadBuyerData() {
+            const buyerData = JSON.parse(localStorage.getItem('buyerData'));
+            if (buyerData) {
+                document.getElementById('fullname').value = buyerData.fullname || '';
+                document.getElementById('phone').value = buyerData.phone || '';
+                document.getElementById('city').value = buyerData.city || '';
+                document.getElementById('message').value = buyerData.message || '';
+            }
+        }
+
         // Fungsi untuk menambahkan produk ke keranjang
         function addToCart() {
             if (!currentProduct) return;
@@ -1312,6 +1334,9 @@
                 return;
             }
             
+            // Simpan data pembeli
+            saveBuyerData();
+            
             // Buat pesan WhatsApp
             const variant = currentProduct.varian[selectedVariantIndex];
             const subtotal = variant.harga_diskon * quantity;
@@ -1321,11 +1346,13 @@
             const paymentMethod = selectedPayment === 'qris' ? 'QRIS' : 'DANA';
             
             // Tambahkan pesan opsional ke template pesan WhatsApp jika ada
-            let messageTemplate = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0AProduk: ${currentProduct.nama}%0AVarian: ${variant.name}%0ATotal: Rp ${formatCurrency(total)}%0AMetode Pembayaran: ${paymentMethod}%0A%0ANama: ${fullname}%0ANomor WhatsApp: ${phone}%0AKota: ${city}`;
+            let messageTemplate = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0AProduk: ${currentProduct.nama}%0AVarian: ${variant.name}%0AJumlah: ${quantity}%0ATotal: Rp ${formatCurrency(total)}%0AMetode Pembayaran: ${paymentMethod}%0A%0ANama: ${fullname}%0ANomor WhatsApp: ${phone}%0AKota: ${city}`;
             
             if (message) {
                 messageTemplate += `%0APesan: ${message}`;
             }
+            
+            messageTemplate += `%0A%0A_Saya memesan dari website ProductDash_`;
             
             const whatsappUrl = `https://wa.me/6287866361260?text=${messageTemplate}`;
             
@@ -1388,6 +1415,15 @@
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', addToCart);
             }
+            
+            // Tambahkan event listener untuk setiap input data pembeli
+            document.getElementById('fullname').addEventListener('input', saveBuyerData);
+            document.getElementById('phone').addEventListener('input', saveBuyerData);
+            document.getElementById('city').addEventListener('input', saveBuyerData);
+            document.getElementById('message').addEventListener('input', saveBuyerData);
+            
+            // Load data pembeli dari localStorage
+            loadBuyerData();
             
             if (!productId) {
                 showError('ID produk tidak ditemukan di URL.');

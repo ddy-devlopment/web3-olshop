@@ -814,8 +814,8 @@
                 </div>
                 
                 <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()" disabled>
-                    <i class="fas fa-credit-card"></i>
-                    Lanjut ke Checkout
+                    <i class="fab fa-whatsapp"></i>
+                    Checkout via WhatsApp
                 </button>
             </div>
         </div>
@@ -1013,7 +1013,7 @@
             }
         }
 
-        // Format currency
+        // Format mata uang
         function formatCurrency(amount) {
             return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
@@ -1072,7 +1072,7 @@
             // Already on cart page
         }
 
-        // Go to checkout
+        // Go to checkout - PERBAIKAN: Langsung ke WhatsApp dengan detail semua produk
         function goToCheckout() {
             // Hanya produk yang dipilih yang akan di-checkout
             const selectedItems = cartItems.filter(item => item.selected);
@@ -1081,12 +1081,53 @@
                 showNotification('Pilih minimal 1 produk untuk checkout!');
                 return;
             }
+
+            // Ambil data pembeli dari localStorage (yang sudah diisi di product-page-template)
+            const buyerData = JSON.parse(localStorage.getItem('buyerData'));
+            if (!buyerData || !buyerData.fullname || !buyerData.phone || !buyerData.city) {
+                alert('Data pembeli tidak lengkap. Silakan kunjungi halaman produk untuk mengisi data pembeli terlebih dahulu.');
+                return;
+            }
+
+            // Buat pesan WhatsApp
+            let whatsappMessage = `Halo Admin, saya ingin melakukan pembayaran untuk:%0A%0A`;
+
+            // Detail produk yang dipilih
+            whatsappMessage += `📦 *DETAIL PRODUK*:%0A`;
+            selectedItems.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                whatsappMessage += `%0A${index + 1}. *${item.name}*%0A`;
+                whatsappMessage += `   - Varian: ${item.variant}%0A`;
+                whatsappMessage += `   - Jumlah: ${item.quantity}%0A`;
+                whatsappMessage += `   - Harga: Rp ${formatCurrency(item.price)}%0A`;
+                whatsappMessage += `   - Subtotal: Rp ${formatCurrency(itemTotal)}%0A`;
+            });
+
+            // Total harga
+            const totalHarga = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            whatsappMessage += `%0A💰 *TOTAL PEMBAYARAN*: Rp ${formatCurrency(totalHarga)}%0A%0A`;
+
+            // Data pembeli
+            whatsappMessage += `👤 *DATA PEMBELI*:%0A`;
+            whatsappMessage += `- Nama: ${buyerData.fullname}%0A`;
+            whatsappMessage += `- Nomor WhatsApp: ${buyerData.phone}%0A`;
+            whatsappMessage += `- Kota: ${buyerData.city}%0A`;
             
-            // Simpan data checkout sementara
-            localStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
+            if (buyerData.message) {
+                whatsappMessage += `- Pesan: ${buyerData.message}%0A`;
+            }
+
+            whatsappMessage += `%0A_Saya memesan dari website ProductDash_`;
+
+            // Encode message untuk URL
+            const encodedMessage = encodeURIComponent(whatsappMessage);
             
-            // Redirect ke halaman checkout
-            window.location.href = 'formcheckout.html';
+            // Buka WhatsApp
+            const whatsappUrl = `https://wa.me/6287866361260?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+
+            // Tampilkan notifikasi
+            showNotification('Pesanan berhasil dikirim via WhatsApp!');
         }
 
         // Initialize the cart when page loads

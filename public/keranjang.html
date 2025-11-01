@@ -1136,13 +1136,9 @@
             whatsappMessage += `_📦 Pesanan ini dibuat melalui website ProductDash_%0A`;
             whatsappMessage += `_⏰ Mohon konfirmasi ketersediaan stok terlebih dahulu_`;
 
-            // Encode message untuk URL
-            const encodedMessage = encodeURIComponent(whatsappMessage);
-            
-            // Buka WhatsApp
-            const whatsappUrl = `https://wa.me/6287866361260?text=${encodedMessage}`;
-            window.open(whatsappUrl, '_blank');
-
+            // Jangan encode lagi karena sudah pakai %0A
+const whatsappUrl = `https://wa.me/6287866361260?text=${whatsappMessage}`;
+window.open(whatsappUrl, '_blank');
             // Tampilkan notifikasi
             showNotification('Pesanan berhasil dikirim via WhatsApp!');
         }

@@ -1240,6 +1240,18 @@
             return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
+        // Fungsi untuk update counter keranjang - PERBAIKAN: menghitung jumlah produk, bukan total quantity
+        function updateCartCounter() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.length; // Menghitung jumlah produk, bukan total quantity
+            
+            const cartCounter = document.getElementById('cartCounter');
+            if (cartCounter) {
+                cartCounter.textContent = totalItems > 99 ? '99+' : totalItems;
+                cartCounter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
         // Fungsi untuk menambahkan produk ke keranjang
         function addToCart() {
             if (!currentProduct) return;
@@ -1259,7 +1271,8 @@
                 originalPrice: variant.harga_asli,
                 image: currentProduct.gambar || '',
                 discount: ((variant.harga_asli - variant.harga_diskon) / variant.harga_asli) * 100,
-                total: variant.harga_diskon * quantity
+                total: variant.harga_diskon * quantity,
+                selected: false // Default tidak terpilih
             };
 
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1271,15 +1284,14 @@
                 // Jika sudah ada, update quantity-nya
                 cart[existingItemIndex].quantity += quantity;
                 cart[existingItemIndex].total = cart[existingItemIndex].price * cart[existingItemIndex].quantity;
+                showCustomNotification(`Quantity produk diperbarui di keranjang!`);
             } else {
                 // Jika belum ada, tambahkan item baru
                 cart.push(item);
+                showCustomNotification(`Produk berhasil dimasukkan ke keranjang!`);
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
-
-            // Tampilkan notifikasi kustom
-            showCustomNotification(`Produk berhasil dimasukkan ke keranjang!`);
 
             // Update cart counter
             updateCartCounter();
@@ -1328,18 +1340,6 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
-        }
-
-        // Fungsi untuk update counter keranjang
-        function updateCartCounter() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
-            const cartCounter = document.getElementById('cartCounter');
-            if (cartCounter) {
-                cartCounter.textContent = totalItems > 99 ? '99+' : totalItems;
-                cartCounter.style.display = totalItems > 0 ? 'flex' : 'none';
-            }
         }
 
         // Fungsi untuk pergi ke halaman keranjang

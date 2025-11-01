@@ -964,6 +964,8 @@
             updateCartSummary();
             updateCartDisplay();
             updateCartCounter();
+            updateDeleteButtonState();
+            updateCheckoutButtonState();
             saveCartToLocalStorage();
         }
 
@@ -1001,9 +1003,9 @@
             checkoutBtn.disabled = !hasSelectedItems;
         }
 
-        // Update cart counter
+        // Update cart counter - PERBAIKAN: menghitung jumlah produk, bukan total quantity
         function updateCartCounter() {
-            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            const totalItems = cartItems.length; // Menghitung jumlah produk, bukan total quantity
             
             if (cartCounter) {
                 cartCounter.textContent = totalItems > 99 ? '99+' : totalItems;
